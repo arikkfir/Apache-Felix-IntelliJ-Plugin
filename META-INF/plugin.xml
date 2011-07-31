@@ -30,12 +30,18 @@
         ]]></description>
     <vendor email="arik.kfir@gmail.com">Arik Kfir</vendor>
 
-    <version>1.1.9</version>
+    <version>1.1.10</version>
     <change-notes><![CDATA[
+        <p>1.1.10 (development)</p>
+        <ul>
+            <li>No changes yet.</li>
+        </ul>
+
         <p>1.1.9</p>
         <ul>
             <li>No code changes - but made the project public on Google Code at:
-                https://code.google.com/p/apache-felix-intellij-plugin</li>
+                https://code.google.com/p/apache-felix-intellij-plugin
+            </li>
         </ul>
 
         <p>1.1.8</p>
