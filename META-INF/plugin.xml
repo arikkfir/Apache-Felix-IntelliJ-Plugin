@@ -28,7 +28,7 @@
         <p>Developed by Arik Kfir at Infolinks Inc.</p>
         </html>
         ]]></description>
-    <vendor url="http://www.infolinks.com" email="arik@infolinks.com">Arik Kfir, Infolinks Inc.</vendor>
+    <vendor email="arik.kfir@gmail.com">Arik Kfir</vendor>
 
     <version>1.1.9</version>
     <change-notes><![CDATA[
@@ -95,7 +95,8 @@
             <li>Support for multiple hot-deployment directories (e.g. one for bundles, and another for watched
                 configuration files, etc)
             </li>
-            <li>Upgrade to Apache Felix File Install 3.1.10</li>
+            <li>Upgrade to Apache Felix File Install 3.1.10
+            </li>
             <li>Support for deploying bundles without including their version in the file name</li>
             <li>Fix bug related to snapshot dependencies getting lost after project reload
             </li>
