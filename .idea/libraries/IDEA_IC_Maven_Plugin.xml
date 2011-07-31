@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="IDEA-IC Maven Plugin">
+    <CLASSES>
+      <root url="file:///usr/share/intellij/idea-IC-107.277/plugins/maven/lib" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/codehaus/plexus/plexus-utils/1.5.5/plexus-utils-1.5.5-sources.jar!/" />
+    </SOURCES>
+    <jarDirectory url="file:///usr/share/intellij/idea-IC-107.277/plugins/maven/lib" recursive="false" />
+  </library>
+</component>
