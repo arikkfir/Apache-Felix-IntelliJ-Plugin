@@ -1,4 +1,4 @@
-<idea-plugin version="2" url="http://www.infolinks.com">
+<idea-plugin version="2" url="https://code.google.com/p/apache-felix-intellij-plugin">
 
     <id>apache-felix-idea-plugin</id>
     <name>Apache Felix</name>
@@ -32,9 +32,10 @@
 
     <version>1.1.9</version>
     <change-notes><![CDATA[
-        <p>1.1.9 (development)</p>
+        <p>1.1.9</p>
         <ul>
-            <li>No changes yet...</li>
+            <li>No code changes - but made the project public on Google Code at:
+                https://code.google.com/p/apache-felix-intellij-plugin</li>
         </ul>
 
         <p>1.1.8</p>
@@ -96,7 +97,8 @@
             </li>
             <li>Upgrade to Apache Felix File Install 3.1.10</li>
             <li>Support for deploying bundles without including their version in the file name</li>
-            <li>Fix bug related to snapshot dependencies getting lost after project reload</li>
+            <li>Fix bug related to snapshot dependencies getting lost after project reload
+            </li>
         </ul>
 
         <p>1.0.3:</p>
