@@ -1,4 +1,4 @@
-<idea-plugin version="2" url="https://code.google.com/p/apache-felix-intellij-plugin">
+<idea-plugin version="2" url="https://github.com/arikkfir/Apache-Felix-IntelliJ-Plugin">
 
     <id>apache-felix-idea-plugin</id>
     <name>Apache Felix</name>
@@ -34,7 +34,7 @@
     <change-notes><![CDATA[
         <p>1.1.11 (development)</p>
         <ul>
-            <li>No changes yet...</li>
+            <li>Moved project to GitHub at https://github.com/arikkfir/Apache-Felix-IntelliJ-Plugin</li>
         </ul>
 
         <p>1.1.10</p>
