@@ -38,25 +38,31 @@
             <SvnBranchConfiguration>
               <option name="branchMap">
                 <map>
-                  <entry key="http://svn.infolinks.local/projects/plugins/idea/apache-felix-idea-plugin/branches">
+                  <entry key="https://apache-felix-intellij-plugin.googlecode.com/svn/branches">
                     <value>
                       <list />
                     </value>
                   </entry>
-                  <entry key="http://svn.infolinks.local/projects/plugins/idea/apache-felix-idea-plugin/tags">
+                  <entry key="https://apache-felix-intellij-plugin.googlecode.com/svn/tags">
                     <value>
-                      <list />
+                      <list>
+                        <SvnBranchItem>
+                          <option name="creationDateMillis" value="1312107658260" />
+                          <option name="revision" value="7" />
+                          <option name="url" value="https://apache-felix-intellij-plugin.googlecode.com/svn/tags/1.1.9" />
+                        </SvnBranchItem>
+                      </list>
                     </value>
                   </entry>
                 </map>
               </option>
               <option name="branchUrls">
                 <list>
-                  <option value="http://svn.infolinks.local/projects/plugins/idea/apache-felix-idea-plugin/branches" />
-                  <option value="http://svn.infolinks.local/projects/plugins/idea/apache-felix-idea-plugin/tags" />
+                  <option value="https://apache-felix-intellij-plugin.googlecode.com/svn/branches" />
+                  <option value="https://apache-felix-intellij-plugin.googlecode.com/svn/tags" />
                 </list>
               </option>
-              <option name="trunkUrl" value="http://svn.infolinks.local/projects/plugins/idea/apache-felix-idea-plugin/trunk" />
+              <option name="trunkUrl" value="https://apache-felix-intellij-plugin.googlecode.com/svn/trunk" />
             </SvnBranchConfiguration>
           </value>
         </entry>
