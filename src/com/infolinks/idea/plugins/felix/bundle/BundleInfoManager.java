@@ -2,6 +2,7 @@ package com.infolinks.idea.plugins.felix.bundle;
 
 
 import aQute.lib.osgi.Jar;
+import com.infolinks.idea.plugins.felix.build.BundleInstructionsHelper;
 import com.infolinks.idea.plugins.felix.facet.OsgiBundleFacet;
 import com.infolinks.idea.plugins.felix.runner.deploy.ArtifactFileDeploymentInfoImpl;
 import com.infolinks.idea.plugins.felix.runner.deploy.BundleDeploymentInfo;
@@ -27,7 +28,6 @@ import org.jetbrains.idea.maven.project.MavenProject;
 import org.jetbrains.idea.maven.project.MavenProjectsManager;
 
 import static com.infolinks.idea.plugins.felix.facet.OsgiBundleFacet.getOsgiBundleFacet;
-import static com.infolinks.idea.plugins.felix.util.maven.MavenUtils.getMavenProject;
 
 /**
  * @author arik
@@ -74,16 +74,21 @@ public class BundleInfoManager extends AbstractProjectComponent {
         Set<BundleDeploymentInfo> bundleDeploymentInfos = new HashSet<BundleDeploymentInfo>();
 
         for( Module module : ModuleManager.getInstance( this.myProject ).getSortedModules() ) {
-            OsgiBundleFacet osgiBundleFacet = getOsgiBundleFacet( module );
-            MavenProject mavenProject = getMavenProject( module );
-            if( mavenProject != null && osgiBundleFacet != null ) {
-                bundleDeploymentInfos.add( new ModuleDeploymentInfoImpl( this.myProject, module.getName(), null, false ) );
+            BundleInstructionsHelper helper = BundleInstructionsHelper.getInstance( module );
+            if( helper != null ) {
+                OsgiBundleFacet osgiBundleFacet = getOsgiBundleFacet( module );
+                MavenProject mavenProject = helper.getMavenProject();
+                if( osgiBundleFacet != null ) {
+                    bundleDeploymentInfos.add( new ModuleDeploymentInfoImpl( this.myProject, module.getName(), null, false ) );
 
-                for( MavenArtifact dependency : mavenProject.getDependencies() ) {
-                    if( !dependency.getScope().equalsIgnoreCase( Artifact.SCOPE_TEST ) ) {
-                        MavenProject project = MavenProjectsManager.getInstance( this.myProject ).findProject( dependency );
-                        if( project == null ) {
-                            bundleDeploymentInfos.add( new ArtifactFileDeploymentInfoImpl( this.myProject, dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion(), null, false ) );
+                    for( MavenArtifact dependency : mavenProject.getDependencies() ) {
+                        if( !dependency.getScope().equalsIgnoreCase( Artifact.SCOPE_TEST ) ) {
+                            MavenProject project = MavenProjectsManager.getInstance( this.myProject ).findProject( dependency );
+                            if( project == null ) {
+                                if( !dependency.getGroupId().equalsIgnoreCase( "org.apache.felix" ) || !dependency.getArtifactId().equalsIgnoreCase( "org.apache.felix.fileinstall" ) ) {
+                                    bundleDeploymentInfos.add( new ArtifactFileDeploymentInfoImpl( this.myProject, dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion(), null, false ) );
+                                }
+                            }
                         }
                     }
                 }

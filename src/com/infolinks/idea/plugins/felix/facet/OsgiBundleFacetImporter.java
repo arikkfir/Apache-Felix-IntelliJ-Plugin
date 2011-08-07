@@ -19,14 +19,14 @@ import static com.infolinks.idea.plugins.felix.facet.OsgiBundleFacetType.getOsgi
  * @author arik
  */
 public class OsgiBundleFacetImporter
-        extends AbstractFacetImporter<OsgiBundleFacet, OsgiBundleFacetConfiguration, OsgiBundleFacetType> {
+    extends AbstractFacetImporter<OsgiBundleFacet, OsgiBundleFacetConfiguration, OsgiBundleFacetType> {
 
-    public static final String MAVEN_BUNDLE_PLUGIN_GROUP_ID = "org.apache.felix";
+    public static final String FELIX_GROUP_ID = "org.apache.felix";
 
     public static final String MAVEN_BUNDLE_PLUGIN_ARTIFACT_ID = "maven-bundle-plugin";
 
     public OsgiBundleFacetImporter() {
-        super( MAVEN_BUNDLE_PLUGIN_GROUP_ID, MAVEN_BUNDLE_PLUGIN_ARTIFACT_ID, getOsgiBundleFacetType(), getOsgiBundleFacetType().getDefaultFacetName() );
+        super( FELIX_GROUP_ID, MAVEN_BUNDLE_PLUGIN_ARTIFACT_ID, getOsgiBundleFacetType(), getOsgiBundleFacetType().getDefaultFacetName() );
     }
 
     @Override

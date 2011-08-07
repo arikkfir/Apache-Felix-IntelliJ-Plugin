@@ -2,6 +2,7 @@ package com.infolinks.idea.plugins.felix.facet;
 
 import aQute.lib.osgi.Builder;
 import aQute.lib.osgi.Constants;
+import com.infolinks.idea.plugins.felix.build.BundleInstructionsHelper;
 import com.infolinks.idea.plugins.felix.facet.pkg.BundlePackage;
 import com.intellij.facet.Facet;
 import com.intellij.facet.FacetManager;
@@ -16,8 +17,6 @@ import org.codehaus.plexus.util.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.maven.project.MavenProject;
 
-import static com.infolinks.idea.plugins.felix.util.maven.MavenUtils.createJarBuilder;
-import static com.infolinks.idea.plugins.felix.util.maven.MavenUtils.getMavenProject;
 import static com.intellij.openapi.compiler.CompilerMessageCategory.ERROR;
 import static com.intellij.openapi.compiler.CompilerMessageCategory.WARNING;
 import static java.util.Collections.emptyList;
@@ -84,7 +83,11 @@ public class OsgiBundleFacet extends Facet<OsgiBundleFacetConfiguration> {
                 context.addMessage( WARNING, "Warning for module '" + module.getName() + "': " + warning, null, -1, -1 );
             }
 
-            MavenProject mavenProject = getMavenProject( module );
+            BundleInstructionsHelper helper = BundleInstructionsHelper.getInstance( module );
+            if( helper == null ) {
+                throw new IllegalStateException( "Module '" + getModule().getName() + "' is not a Maven module! (Maven OSGi facet associated with a non-Maven project)" );
+            }
+            MavenProject mavenProject = helper.getMavenProject();
             File buildDir = new File( mavenProject.getBuildDirectory() );
             FileUtils.forceMkdir( buildDir );
 
@@ -113,7 +116,12 @@ public class OsgiBundleFacet extends Facet<OsgiBundleFacetConfiguration> {
     private Builder getBuilder() {
         if( this.builder == null ) {
             try {
-                this.builder = createJarBuilder( getModule() );
+                BundleInstructionsHelper helper = BundleInstructionsHelper.getInstance( getModule() );
+                if( helper == null ) {
+                    throw new IllegalStateException( "Could not create JAR builder for module '" + getModule().getName() + "': module is not a Maven bundle module " );
+                } else {
+                    this.builder = helper.createJarBuilder();
+                }
             } catch( IOException e ) {
                 throw new IllegalStateException( "Could not create JAR builder for module '" + getModule().getName() + "': " + e.getMessage(), e );
             }

@@ -30,11 +30,14 @@
         ]]></description>
     <vendor email="arik.kfir@gmail.com">Arik Kfir</vendor>
 
-    <version>1.1.10</version>
+    <version>1.2.0</version>
     <change-notes><![CDATA[
-        <p>1.1.10 (development)</p>
+        <p>1.2.0 (development)</p>
         <ul>
-            <li>No changes yet.</li>
+            <li>Upgrade BND to 1.43.0</li>
+            <li>Search for packages to import by scanning compiled classes in the output directory, rather than
+            Java source files. This enables creating OSGi bundles with non-Java source code such as Groovy or
+            Scala.</li>
         </ul>
 
         <p>1.1.9</p>
@@ -198,5 +201,11 @@
         </component>
 
     </project-components>
+
+    <module-components>
+        <component>
+            <implementation-class>com.infolinks.idea.plugins.felix.build.BundleInstructionsHelper</implementation-class>
+        </component>
+    </module-components>
 
 </idea-plugin>

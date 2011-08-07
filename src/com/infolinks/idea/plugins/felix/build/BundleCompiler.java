@@ -1,7 +1,6 @@
 package com.infolinks.idea.plugins.felix.build;
 
 import com.infolinks.idea.plugins.felix.facet.OsgiBundleFacet;
-import com.infolinks.idea.plugins.felix.util.maven.MavenUtils;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.application.Result;
 import com.intellij.openapi.compiler.*;
@@ -52,10 +51,13 @@ public class BundleCompiler implements ClassPostProcessingCompiler {
                 result.setResult( ProcessingItem.EMPTY_ARRAY );
 
                 for( Module module : compileScope.getAffectedModules() ) {
-                    OsgiBundleFacet bundleFacet = getOsgiBundleFacet( module );
-                    if( bundleFacet != null ) {
-                        collectClasses( processingItems, module, MavenUtils.getMavenProject( module ).getFile() );
-                        collectClasses( processingItems, module, CompilerPaths.getModuleOutputDirectory( module, false ) );
+                    BundleInstructionsHelper helper = BundleInstructionsHelper.getInstance( module );
+                    if( helper != null ) {
+                        OsgiBundleFacet bundleFacet = getOsgiBundleFacet( module );
+                        if( bundleFacet != null ) {
+                            collectClasses( processingItems, module, helper.getMavenProject().getFile() );
+                            collectClasses( processingItems, module, CompilerPaths.getModuleOutputDirectory( module, false ) );
+                        }
                     }
                 }
 
