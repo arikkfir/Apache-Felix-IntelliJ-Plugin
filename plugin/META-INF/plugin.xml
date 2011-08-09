@@ -30,10 +30,14 @@
         ]]></description>
     <vendor email="arik.kfir@gmail.com">Arik Kfir</vendor>
 
-    <version>1.1.11</version>
+    <version>1.2.0</version>
     <change-notes><![CDATA[
-        <p>1.1.11 (development)</p>
+        <p>1.2.0 (development)</p>
         <ul>
+            <li>Refactor hot-deployment mechanism: stopped using Apache Felix FileInstall and instead we deploy a small
+            agent to Felix when you run or debug your project. The plugin then communicates with the agent, issuing
+            update commands to re-compiled bundles. This allows users to use and deploy FileInstall and configure it
+            manually without conflicting with the plugin's usage of the FileInstall bundle.</li>
             <li>Moved project to GitHub at https://github.com/arikkfir/Apache-Felix-IntelliJ-Plugin</li>
         </ul>
 
