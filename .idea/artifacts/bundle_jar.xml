@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="bundle:jar">
+    <output-path>$PROJECT_DIR$/plugin/src/bundles</output-path>
+    <root id="archive" name="bundle.jar">
+      <element id="module-output" name="bundle" />
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/bundle/META-INF/MANIFEST.MF" />
+      </element>
+    </root>
+  </artifact>
+</component>
