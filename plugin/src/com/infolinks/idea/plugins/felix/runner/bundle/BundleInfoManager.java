@@ -1,4 +1,4 @@
-package com.infolinks.idea.plugins.felix.bundle;
+package com.infolinks.idea.plugins.felix.runner.bundle;
 
 
 import aQute.lib.osgi.Jar;

@@ -197,7 +197,7 @@
 
         <!-- manages BundleInfo objects for virtual files -->
         <component>
-            <implementation-class>com.infolinks.idea.plugins.felix.bundle.BundleInfoManager</implementation-class>
+            <implementation-class>com.infolinks.idea.plugins.felix.runner.bundle.BundleInfoManager</implementation-class>
         </component>
 
         <!-- performs bundle deployment to felix bundles/hot-deploy dirs -->

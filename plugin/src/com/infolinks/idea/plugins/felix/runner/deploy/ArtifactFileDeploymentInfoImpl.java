@@ -1,7 +1,7 @@
 package com.infolinks.idea.plugins.felix.runner.deploy;
 
-import com.infolinks.idea.plugins.felix.bundle.BundleInfo;
-import com.infolinks.idea.plugins.felix.bundle.BundleInfoManager;
+import com.infolinks.idea.plugins.felix.runner.bundle.BundleInfo;
+import com.infolinks.idea.plugins.felix.runner.bundle.BundleInfoManager;
 import com.intellij.openapi.project.Project;
 import java.io.File;
 import org.jetbrains.idea.maven.project.MavenProjectsManager;
@@ -167,7 +167,7 @@ public class ArtifactFileDeploymentInfoImpl implements ArtifactDeploymentInfo {
             return this.mavenVersion;
         }
 
-        BundleInfo bundleInfo = BundleInfoManager.getInstance( this.project ).getBundleInfo( file );
+        BundleInfo bundleInfo = BundleInfoManager.getInstance(this.project).getBundleInfo( file );
         if( bundleInfo == null ) {
             return this.mavenVersion;
         }

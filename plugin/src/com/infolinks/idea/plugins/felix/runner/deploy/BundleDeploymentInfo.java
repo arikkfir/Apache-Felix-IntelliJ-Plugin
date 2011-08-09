@@ -1,6 +1,7 @@
 package com.infolinks.idea.plugins.felix.runner.deploy;
 
-import com.infolinks.idea.plugins.felix.bundle.BundleInfo;
+import com.infolinks.idea.plugins.felix.runner.bundle.BundleInfo;
+
 import java.io.File;
 
 /**

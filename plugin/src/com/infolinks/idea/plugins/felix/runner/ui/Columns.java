@@ -1,6 +1,6 @@
 package com.infolinks.idea.plugins.felix.runner.ui;
 
-import com.infolinks.idea.plugins.felix.bundle.BundleInfo;
+import com.infolinks.idea.plugins.felix.runner.bundle.BundleInfo;
 import com.infolinks.idea.plugins.felix.runner.FelixRunConfiguration;
 import com.infolinks.idea.plugins.felix.runner.deploy.ArtifactDeploymentInfo;
 import com.infolinks.idea.plugins.felix.runner.deploy.BundleDeploymentInfo;
