@@ -11,6 +11,7 @@
       <root url="file://$IDEA_IC_HOME$/src/plugins/maven/src/main/resources" />
       <root url="file://$IDEA_IC_HOME$/src/plugins/maven/maven-server-api/src" />
       <root url="file://$IDEA_IC_HOME$/src/plugins/maven/maven3-server-impl/src" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/codehaus/plexus/plexus-utils/1.5.5/plexus-utils-1.5.5-sources.jar!/" />
     </SOURCES>
     <jarDirectory url="file://$IDEA_IC_HOME$/plugins/maven/lib" recursive="false" />
   </library>
