@@ -97,6 +97,9 @@ public class BundleCompiler implements ClassPostProcessingCompiler {
 
         context.putUserData( MODIFIED_MODULES_KEY, updatedModules );
 
+        context.getProgressIndicator().setText( "" );
+        context.getProgressIndicator().setText2( "" );
+
         return successfulyProcessedItems.toArray( new ProcessingItem[ successfulyProcessedItems.size() ] );
     }
 
@@ -113,11 +116,18 @@ public class BundleCompiler implements ClassPostProcessingCompiler {
     }
 
     private boolean processModule( CompileContext context, Module module ) {
+        //
+        // show progress
+        //
         String bundleName = getOsgiBundleFacet( module ).getBundleName();
         this.logger.info( "Building OSGi bundle: " + bundleName );
         context.getProgressIndicator().setText2( "Building OSGi bundle: " + bundleName );
 
+        //
+        // build bundle
+        //
         getOsgiBundleFacet( module ).make( context );
+
         return context.getMessageCount( CompilerMessageCategory.ERROR ) == 0;
     }
 
