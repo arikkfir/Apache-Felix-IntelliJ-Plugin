@@ -1,23 +1,22 @@
 <idea-plugin version="2" url="https://github.com/arikkfir/Apache-Felix-IntelliJ-Plugin">
 
-    <id>apache-felix-idea-plugin</id>
+    <id>apache-felix-plugin</id>
     <name>Apache Felix</name>
     <description><![CDATA[
         <html>
-        <strong>Apache Felix support for IntelliJ IDEA 10.x</strong>
+        <strong>Apache Felix Integration for IntelliJ IDEA 10.x</strong>
 
         <p>This plugin provides native IntelliJ IDEA support for developing, running and debugging OSGi
             projects developed using Apache Felix and the Apache Felix Maven Bundle Plugin.</p>
 
-        <p>Using this plugin, developers can run and debug Apache Felix OSGi containers, allowing the user to
-        choose bundles and modules for deployment. The developer can opt for deploying some of the bundles using hot-deploy
-        mechanism (via Apache Felix File Install bundle), allowing for redeployment when bundles are rebuilt, utilizing
-        OSGi's dynamic nature.</p>
+        <p>Using this plugin, developers can run and debug OSGi applications using the Apache Felix OSGi container. The
+        plugin allows the user to choose bundles and modules for deployment, updates installed bundles in a running
+        container whenever they are built (e.g. hot-deploy), etc.</p>
 
         <p>The plugin provides a new type of run configuration: Apache Felix run configuration. The configuration of this
-        run configuration allows the developer to choose which bundles to deploy, and the method of deployment (startup
-        or hot-deploy). The list of available bundles for deployment is comprised of all modules with packaging of
-        "bundle", and their dependencies. Non-Maven modules (or Maven modules not of packaging "bundle") are ignored.</p>
+        run configuration allows the developer to choose which bundles to deploy, The list of available bundles for
+        deployment is comprised of all modules with packaging of "bundle", and their dependencies. Non-Maven modules (or
+        Maven modules not of packaging "bundle") are ignored.</p>
 
         <p><strong>NOTE: This plugin contains code snippets copied from Apache Felix's Maven Bundle Plugin. These were
         because there was no easy way to directly invoke the Maven plugin. It is the intention of this plugin writer
