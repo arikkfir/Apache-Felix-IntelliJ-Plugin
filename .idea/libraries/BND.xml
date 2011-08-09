@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="BND">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/bndlib-1.43.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib/bndlib-1.43.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

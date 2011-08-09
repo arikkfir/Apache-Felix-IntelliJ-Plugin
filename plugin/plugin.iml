@@ -8,6 +8,7 @@
     </content>
     <orderEntry type="jdk" jdkName="IDEA IC-107.481" jdkType="IDEA JDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="BND" level="project" />
   </component>
 </module>
 
