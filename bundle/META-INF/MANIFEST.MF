@@ -1,0 +1,11 @@
+Manifest-Version: 1
+Created-By: 1.6.0_26 (Sun Microsystems Inc.)
+Bundle-Activator: com.infolinks.idea.plugins.felix.bundle.internal.Activator
+Bundle-Description: This bundle allows IntelliJ to communicate with the
+ running Apache Felix process for installing, updating or removing
+ bundles.
+Bundle-ManifestVersion: 2
+Bundle-Name: Apache Felix IntelliJ Plugin server
+Bundle-SymbolicName: com.infolinks.idea.plugins.felix.bundle
+Bundle-Vendor: Infolinks Inc.
+Bundle-Version: 1.0.0.SNAPSHOT
