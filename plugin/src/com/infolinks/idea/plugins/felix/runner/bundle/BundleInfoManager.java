@@ -85,9 +85,7 @@ public class BundleInfoManager extends AbstractProjectComponent {
                         if( !dependency.getScope().equalsIgnoreCase( Artifact.SCOPE_TEST ) ) {
                             MavenProject project = MavenProjectsManager.getInstance( this.myProject ).findProject( dependency );
                             if( project == null ) {
-                                if( !dependency.getGroupId().equalsIgnoreCase( "org.apache.felix" ) || !dependency.getArtifactId().equalsIgnoreCase( "org.apache.felix.fileinstall" ) ) {
-                                    bundleDeploymentInfos.add( new ArtifactFileDeploymentInfoImpl( this.myProject, dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion() ) );
-                                }
+                                bundleDeploymentInfos.add( new ArtifactFileDeploymentInfoImpl( this.myProject, dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion() ) );
                             }
                         }
                     }
