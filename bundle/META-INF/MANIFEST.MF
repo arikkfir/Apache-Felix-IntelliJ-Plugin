@@ -9,3 +9,4 @@ Bundle-Name: Apache Felix IntelliJ Plugin server
 Bundle-SymbolicName: com.infolinks.idea.plugins.felix.bundle
 Bundle-Vendor: Infolinks Inc.
 Bundle-Version: 1.0.0.SNAPSHOT
+Import-Package: org.osgi.framework

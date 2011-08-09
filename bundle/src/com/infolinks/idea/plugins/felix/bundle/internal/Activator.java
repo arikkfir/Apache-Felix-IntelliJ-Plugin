@@ -10,6 +10,7 @@ import org.osgi.framework.BundleContext;
 /**
  * @author arik
  */
+@SuppressWarnings( { "UnusedDeclaration" } )
 public class Activator implements BundleActivator {
 
     private Listener listener;
@@ -17,6 +18,17 @@ public class Activator implements BundleActivator {
     @Override
     public void start( BundleContext context ) throws Exception {
         this.listener = new Listener();
+        this.listener.setBundleContext( context );
+
+        String port = context.getProperty( "intellij.felix.port" );
+        if( port != null ) {
+            try {
+                this.listener.setPort( Integer.parseInt( port ) );
+            } catch( NumberFormatException e ) {
+                e.printStackTrace();
+            }
+        }
+
         this.listener.start();
     }
 

@@ -4,27 +4,41 @@
 
 package com.infolinks.idea.plugins.felix.bundle.internal;
 
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.net.InetAddress;
+import com.infolinks.idea.plugins.felix.bundle.internal.util.IoUtils;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
+import org.osgi.framework.Version;
 
 /**
  * @author arik
  */
 public class Listener {
 
-    public static int PORT = 14078;
+    private BundleContext bundleContext;
+
+    private int port = 14078;
 
     private Acceptor acceptor;
 
     private Thread acceptorThread;
 
+    public void setBundleContext( BundleContext bundleContext ) {
+        this.bundleContext = bundleContext;
+    }
+
+    public void setPort( int port ) {
+        this.port = port;
+    }
+
     public void stop() throws InterruptedException {
         if( this.acceptor != null ) {
-            this.acceptor.stop = true;
+            this.acceptor.stop();
             Thread.sleep( 1000 );
         }
         if( this.acceptorThread != null ) {
@@ -36,65 +50,207 @@ public class Listener {
 
     public void start() throws IOException, InterruptedException {
         stop();
-        this.acceptor = new Acceptor();
+        this.acceptor = new Acceptor( this.bundleContext, this.port );
         this.acceptorThread = new Thread( this.acceptor, "IntelliJ IDEA Acceptor thread" );
         this.acceptorThread.start();
     }
 
-    class Acceptor implements Runnable {
+    private static class Acceptor implements Runnable {
+
+        private final BundleContext bundleContext;
+
+        private final int port;
 
         private boolean stop;
 
+        private Acceptor( BundleContext bundleContext, int port ) {
+            this.bundleContext = bundleContext;
+            this.port = port;
+        }
+
+        public void stop() {
+            this.stop = true;
+        }
+
         @Override
         public void run() {
+            System.out.printf( "Starting Bundle Server listener thread...\n" );
             try {
-                ServerSocket listener = new ServerSocket( PORT, 10, InetAddress.getLocalHost() );
+                ServerSocket listener = new ServerSocket( this.port, 10 );
                 listener.setReuseAddress( true );
 
                 this.stop = false;
                 while( !this.stop ) {
-                    new Thread( new Connection( listener.accept() ) ).start();
+                    new Thread( new Connection( this.bundleContext, listener.accept() ) ).start();
                 }
+                System.out.printf( "Stopped Bundle Server listener thread...\n" );
 
-            } catch( IOException ioe ) {
-                ioe.printStackTrace();
+            } catch( Exception e ) {
+                System.out.printf( "The Bundle Server listener thread has been stopped due to exception: %s\n", e.getMessage() );
+                e.printStackTrace();
             }
         }
     }
 
-    class Connection implements Runnable {
+    private static class Connection implements Runnable {
 
-        private Socket server;
+        private static final Pattern COMMAND_PATTERN = Pattern.compile( "INSTALL:([^:]+)|UPDATE:([^:]+):([^:]+)|UNINSTALL:([^:]+):([^:]+)" );
 
-        private String line, input;
+        private final BundleContext bundleContext;
 
-        Connection( Socket server ) {
-            this.server = server;
+        private final Socket socket;
+
+        private Connection( BundleContext bundleContext, Socket socket ) {
+            this.bundleContext = bundleContext;
+            this.socket = socket;
         }
 
         public void run() {
-            input = "";
+            BufferedReader reader = null;
+            Writer writer = null;
             try {
-                // Get input from the client
-                DataInputStream in = new DataInputStream( server.getInputStream() );
-                PrintStream out = new PrintStream( server.getOutputStream() );
+                reader = new BufferedReader( new InputStreamReader( this.socket.getInputStream(), "UTF-8" ), 8096 );
+                writer = new OutputStreamWriter( this.socket.getOutputStream(), "UTF-8" );
 
-                while( ( line = in.readLine() ) != null && !line.equals( "." ) ) {
-                    input = input + line;
-                    out.println( "I got:" + line );
+                String line = reader.readLine();
+                if( line != null ) {
+                    Matcher matcher = COMMAND_PATTERN.matcher( line );
+                    if( !matcher.matches() ) {
+                        throw new BadCommandException( line );
+                    }
+
+                    System.out.println( "Bundle server - read line: " + line );
+                    if( line.startsWith( "INSTALL:" ) ) {
+                        try {
+                            this.bundleContext.installBundle( matcher.group( 1 ) );
+                        } catch( BundleException e ) {
+                            throw new BundleServerException( "Bundle install error: " + e.getMessage(), e );
+                        }
+                    } else if( line.startsWith( "UPDATE:" ) ) {
+                        try {
+                            findBundle( matcher.group( 2 ), getVersion( matcher.group( 3 ) ) ).update();
+                        } catch( BundleException e ) {
+                            throw new BundleServerException( "Bundle update error: " + e.getMessage(), e );
+                        }
+                    } else if( line.startsWith( "UNINSTALL:" ) ) {
+                        try {
+                            findBundle( matcher.group( 4 ), getVersion( matcher.group( 5 ) ) ).uninstall();
+                        } catch( BundleException e ) {
+                            throw new BundleServerException( "Bundle uninstall error: " + e.getMessage(), e );
+                        } catch( IllegalArgumentException e ) {
+                            throw new BundleServerException( "Bundle uninstall error: " + e.getMessage(), e );
+                        }
+                    } else {
+                        throw new BadCommandException( "Illegal bundle command: " + line );
+                    }
                 }
+                writer.write( "OK\n" );
 
-                // Now write to the client
+            } catch( BundleServerException e ) {
+                printKnownError( writer, e );
 
-                System.out.println( "Overall message is:" + input );
-                out.println( "Overall message is:" + input );
+            } catch( Exception e ) {
+                printUnknownError( writer, e );
 
-                server.close();
-            } catch( IOException ioe ) {
-                System.out.println( "IOException on socket listen: " + ioe );
-                ioe.printStackTrace();
+            } finally {
+                IoUtils.closeQuietly( reader );
+                if( writer != null ) {
+                    try {
+                        writer.flush();
+                    } catch( IOException ignore ) {
+                        //no-op
+                    }
+                }
+                IoUtils.closeQuietly( writer );
+                IoUtils.closeQuietly( this.socket );
             }
         }
+
+        private Command getCommand( String commandName ) throws BadCommandException {
+            try {
+                return Command.valueOf( commandName );
+            } catch( IllegalArgumentException e ) {
+                throw new BadCommandException( "Unknown bundle command: " + commandName );
+            }
+        }
+
+        private Version getVersion( String versionValue ) throws BadCommandException {
+            try {
+                return new Version( versionValue );
+            } catch( Exception e ) {
+                throw new BadCommandException( "Illegal bundle version: " + versionValue );
+            }
+        }
+
+        private Bundle findBundle( String symbolicName, Version version ) throws BadCommandException {
+            for( Bundle bundle : this.bundleContext.getBundles() ) {
+                if( bundle.getSymbolicName().equals( symbolicName ) && bundle.getVersion().equals( version ) ) {
+                    return bundle;
+                }
+            }
+            throw new BadCommandException( "Bundle '" + symbolicName + "-" + version + "' could not be found" );
+        }
+
+        private void printKnownError( Writer out, Exception e ) {
+            printKnownError( out, e.getMessage() );
+        }
+
+        private void printKnownError( Writer out, String message ) {
+            if( out != null ) {
+                try {
+                    out.write( "ERR:" + message + "\n" );
+                } catch( IOException e1 ) {
+                    e1.printStackTrace();
+                }
+            } else {
+                System.out.println( "ERR:" + message );
+            }
+        }
+
+        private void printUnknownError( Writer out, Exception e ) {
+            e.printStackTrace();
+            printKnownError( out, e );
+        }
     }
+
+    /*
+        public static void main( String[] args ) {
+            printMatch( "INSTALL" );
+            printMatch( "INSTALL:" );
+            printMatch( "INSTALL:arik" );
+            printMatch( "INSTALL:arik:" );
+            printMatch( "INSTALL:arik:1.1.1" );
+            printMatch( "UPDATE" );
+            printMatch( "UPDATE:" );
+            printMatch( "UPDATE:bsn" );
+            printMatch( "UPDATE:bsn:" );
+            printMatch( "UPDATE:bsn:ver" );
+            printMatch( "UPDATE:bsn:ver:" );
+            printMatch( "UPDATE:bsn:ver:extra" );
+            printMatch( "UNINSTALL" );
+            printMatch( "UNINSTALL:" );
+            printMatch( "UNINSTALL:bsn" );
+            printMatch( "UNINSTALL:bsn:" );
+            printMatch( "UNINSTALL:bsn:ver" );
+            printMatch( "UNINSTALL:bsn:ver:" );
+            printMatch( "UNINSTALL:bsn:ver:extra" );
+        }
+
+        private static void printMatch( String input ) {
+            System.out.println( "Input:   " + input );
+
+            Matcher matcher = Pattern.compile( "INSTALL:([^:]+)|UPDATE:([^:]+):([^:]+)|UNINSTALL:([^:]+):([^:]+)" ).matcher( input );
+            System.out.println( "Matches: " + matcher.matches() );
+
+            if( matcher.matches() ) {
+                System.out.println( "Groups: " );
+                for( int i = 1; i <= matcher.groupCount(); i++ ) {
+                    System.out.println( "    " + i + ": " + matcher.group( i ) );
+                }
+            }
+            System.out.println();
+            System.out.println();
+        }
+    */
 }
 
