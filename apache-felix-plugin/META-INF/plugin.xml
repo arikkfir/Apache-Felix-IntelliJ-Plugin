@@ -29,8 +29,13 @@
         ]]></description>
     <vendor email="arik.kfir@gmail.com">Arik Kfir</vendor>
 
-    <version>1.2.0</version>
+    <version>1.2.1</version>
     <change-notes><![CDATA[
+        <p>1.2.1 (development)</p>
+        <ul>
+            <li>No changes yet...</li>
+        </ul>
+
         <p>1.2.0</p>
         <ul>
             <li>Refactor hot-deployment mechanism: stopped using Apache Felix FileInstall and instead we deploy a small
