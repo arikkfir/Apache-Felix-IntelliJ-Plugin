@@ -4,3 +4,4 @@
     * TODO: Support custom headers (e.g. for Web-Resources use-case)
     * FEATURE: The "Import-Package" header generated for module bundles does not contain version info for imported packages from other modules (since it points to their target/classes with no manifest)
     * FEATURE: replace usage of Apache Felix File Install for hot-deploy with custom bundle which the IDE communicates with
+    * FEATURE: create a problem reporter for plugin exceptions to create GitHub issues
