@@ -56,7 +56,7 @@ public class FelixRunProfileState extends JavaCommandLineState {
     protected AnAction[] createActions( ConsoleView console, ProcessHandler processHandler, Executor executor ) {
         List<AnAction> actions = new ArrayList<AnAction>( asList( super.createActions( console, processHandler, executor ) ) );
         if( console != null ) {
-            actions.add( new RedeployHotDeployBundlesAction( this.runConfiguration ) );
+            //TODO: actions.add( new RedeployHotDeployBundlesAction( this.runConfiguration ) );
         }
         return actions.toArray( new AnAction[ actions.size() ] );
     }
@@ -69,7 +69,6 @@ public class FelixRunProfileState extends JavaCommandLineState {
         }
 
         try {
-
             FelixBundlesDeployer.getInstance( this.project ).setupDeployment( this.runConfiguration );
             OSProcessHandler processHandler = super.startProcess();
 
@@ -130,9 +129,6 @@ public class FelixRunProfileState extends JavaCommandLineState {
     protected JavaParameters createJavaParameters() throws ExecutionException {
         JavaParameters params = createBaseJavaParameters();
         setupStandardFelix( params );
-        if( runConfiguration.isEnableHotDeploy() ) {
-            setupHotDeploy( params );
-        }
 
         String vmParameters = this.runConfiguration.getVmParameters();
         if( vmParameters != null && vmParameters.trim().length() > 0 ) {
@@ -156,8 +152,7 @@ public class FelixRunProfileState extends JavaCommandLineState {
         params.getVMParametersList().defineProperty( "felix.auto.deploy.action", "install,start" );
         params.getVMParametersList().defineProperty( "felix.log.level", this.runConfiguration.getFelixLogLevel() + "" );
         params.getVMParametersList().defineProperty( "felix.startlevel.bundle", "1" );
-        params.getVMParametersList().defineProperty( "org.osgi.framework.startlevel.beginning", "5" );
-        params.getVMParametersList().defineProperty( "org.osgi.framework.storage.clean", "onFirstInit" );
+        params.getVMParametersList().defineProperty( "org.osgi.framework.startlevel.beginning", "1" );
 
         File workDir = this.runConfiguration.getWorkingDirectory();
         if( !workDir.exists() && !workDir.mkdirs() ) {
@@ -176,21 +171,6 @@ public class FelixRunProfileState extends JavaCommandLineState {
                 throw new ExecutionException( "Felix cache directory points to a file at: " + felixCacheDir );
             }
         }
-    }
-
-    private void setupHotDeploy( JavaParameters params ) {
-        StringBuilder dirs = new StringBuilder( 200 );
-        for( File directory : this.runConfiguration.getHotDeployDirectories() ) {
-            if( dirs.length() > 0 ) {
-                dirs.append( ',' );
-            }
-            dirs.append( noWinSlashes( directory ) );
-        }
-        params.getVMParametersList().defineProperty( "felix.fileinstall.dir", dirs.toString() );
-        params.getVMParametersList().defineProperty( "felix.fileinstall.start.level", "4" );
-        params.getVMParametersList().defineProperty( "felix.fileinstall.noInitialDelay", "true" );
-        params.getVMParametersList().defineProperty( "felix.fileinstall.disableConfigSave", "true" );
-        params.getVMParametersList().defineProperty( "felix.fileinstall.poll", this.runConfiguration.getPolling() + "" );
     }
 
     private String noWinSlashes( File file ) {

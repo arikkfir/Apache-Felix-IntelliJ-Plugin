@@ -7,8 +7,6 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.util.xml.ui.BigStringComponent;
 import java.io.File;
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,51 +21,31 @@ public class FelixExecutionSettingsEditor extends SettingsEditor<FelixRunConfigu
 
     private TextFieldWithBrowseButton workDir;
 
-    private TextFieldWithBrowseButton startupBundlesDir;
-
-    private JCheckBox enableHotDeploy;
-
-    private HotDeployDirectoriesPanel hotDeployDirs;
+    private TextFieldWithBrowseButton bundlesDir;
 
     private BigStringComponent jvmArgs;
 
-    private JTextField polling;
+    private JComboBox loggingLevel;
 
     public FelixExecutionSettingsEditor() {
         this.workDir.addBrowseFolderListener( "Select working directory", null, null, createSingleFolderDescriptor() );
-        this.startupBundlesDir.addBrowseFolderListener( "Select bundles directory", null, null, createSingleFolderDescriptor() );
-        this.enableHotDeploy.addChangeListener( new ChangeListener() {
-
-            @Override
-            public void stateChanged( ChangeEvent e ) {
-                hotDeployDirs.setEnabled( enableHotDeploy.isSelected() );
-            }
-        } );
+        this.bundlesDir.addBrowseFolderListener( "Select bundles directory", null, null, createSingleFolderDescriptor() );
     }
 
     @Override
     protected void resetEditorFrom( FelixRunConfiguration configuration ) {
-        this.polling.setText( configuration.getPolling() + "" );
         this.workDir.setText( getFilePath( configuration.getWorkingDirectory() ) );
-        this.startupBundlesDir.setText( getFilePath( configuration.getBundlesDirectory() ) );
-        this.enableHotDeploy.setSelected( configuration.isEnableHotDeploy() );
-        this.hotDeployDirs.setDirectories( configuration.getHotDeployDirectories() );
-        this.hotDeployDirs.setProject( configuration.getProject() );
         this.jvmArgs.setText( configuration.getVmParameters() );
+        this.bundlesDir.setText( getFilePath( configuration.getBundlesDirectory() ) );
+        this.loggingLevel.setSelectedIndex( configuration.getFelixLogLevel() );
     }
 
     @Override
     protected void applyEditorTo( FelixRunConfiguration configuration ) throws ConfigurationException {
         configuration.setWorkingDirectory( createFile( this.workDir ) );
-        configuration.setBundlesDirectory( createFile( this.startupBundlesDir ) );
-        configuration.setEnableHotDeploy( this.enableHotDeploy.isSelected() );
-        configuration.setHotDeployDirectories( this.hotDeployDirs.getDirectories() );
         configuration.setVmParameters( this.jvmArgs.getText() );
-        try {
-            configuration.setPolling( Integer.parseInt( this.polling.getText() ) );
-        } catch( NumberFormatException e ) {
-            //ignore
-        }
+        configuration.setBundlesDirectory( createFile( this.bundlesDir ) );
+        configuration.setFelixLogLevel( this.loggingLevel.getSelectedIndex() );
     }
 
     @NotNull
@@ -98,7 +76,6 @@ public class FelixExecutionSettingsEditor extends SettingsEditor<FelixRunConfigu
     }
 
     private void createUIComponents() {
-        this.hotDeployDirs = new HotDeployDirectoriesPanel();
         this.jvmArgs = new BigStringComponent( "Enter JVM arguments" );
     }
 }

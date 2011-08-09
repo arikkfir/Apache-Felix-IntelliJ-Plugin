@@ -1,7 +1,7 @@
 package com.infolinks.idea.plugins.felix.runner.ui;
 
-import com.infolinks.idea.plugins.felix.runner.bundle.BundleInfoManager;
 import com.infolinks.idea.plugins.felix.runner.FelixRunConfiguration;
+import com.infolinks.idea.plugins.felix.runner.bundle.BundleInfoManager;
 import com.infolinks.idea.plugins.felix.runner.deploy.BundleDeploymentInfo;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SettingsEditor;
@@ -27,9 +27,9 @@ public class FelixDeploymentSettingsEditor extends SettingsEditor<FelixRunConfig
 
     private static final ReverseIndexComparator REVERSE_INDEX_COMPARATOR = new ReverseIndexComparator();
 
-    private AvailableBundlesTable availableBundlesTable;
+    private BundlesTable availableBundlesTable;
 
-    private SelectedBundlesTable selectedBundlesTable;
+    private BundlesTable selectedBundlesTable;
 
     private JButton undeployButton;
 
@@ -113,7 +113,7 @@ public class FelixDeploymentSettingsEditor extends SettingsEditor<FelixRunConfig
                                                             List<BundleDeploymentInfo> selectedBundles ) {
         //TODO arik (7/8/11): move this to the run configuration, cached (to prevent delay, maybe even on project load)
 
-        List<BundleDeploymentInfo> availableBundles = BundleInfoManager.getInstance(project).getAvailableBundles();
+        List<BundleDeploymentInfo> availableBundles = BundleInfoManager.getInstance( project ).getAvailableBundles();
         @SuppressWarnings( { "UnnecessaryLocalVariable", "unchecked" } )
         Collection<BundleDeploymentInfo> collection = CollectionUtils.subtract( availableBundles, selectedBundles );
         return new ArrayList<BundleDeploymentInfo>( collection );

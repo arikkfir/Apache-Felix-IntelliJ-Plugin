@@ -24,7 +24,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import org.codehaus.plexus.util.FileUtils;
 import org.jdom.Element;
@@ -41,15 +40,15 @@ public class FelixRunConfiguration extends RunConfigurationBase implements Modul
 
     private static final int DEFAULT_FELIX_LOG_LEVEL = 3;
 
+    private static final int DEFAULT_BUNDLE_SERVER_PORT = 14078;
+
     private int felixLogLevel = DEFAULT_FELIX_LOG_LEVEL;
 
     private File workingDirectory;
 
     private File bundlesDirectory;
 
-    private boolean enableHotDeploy;
-
-    private List<File> hotDeployDirectories;
+    private int bundleServerPort = DEFAULT_BUNDLE_SERVER_PORT;
 
     private String vmParameters;
 
@@ -93,31 +92,12 @@ public class FelixRunConfiguration extends RunConfigurationBase implements Modul
         this.bundlesDirectory = bundlesDirectory;
     }
 
-    public boolean isEnableHotDeploy() {
-        return enableHotDeploy;
+    public int getBundleServerPort() {
+        return bundleServerPort;
     }
 
-    public void setEnableHotDeploy( boolean enableHotDeploy ) {
-        this.enableHotDeploy = enableHotDeploy;
-        if( this.enableHotDeploy && this.hotDeployDirectories == null ) {
-            this.hotDeployDirectories = new LinkedList<File>();
-        }
-    }
-
-    public List<File> getHotDeployDirectories() {
-        return hotDeployDirectories;
-    }
-
-    public void setHotDeployDirectories( List<File> hotDeployDirectories ) {
-        if( this.enableHotDeploy ) {
-            if( hotDeployDirectories == null ) {
-                this.hotDeployDirectories = new LinkedList<File>();
-            } else {
-                this.hotDeployDirectories = hotDeployDirectories;
-            }
-        } else {
-            this.hotDeployDirectories = hotDeployDirectories;
-        }
+    public void setBundleServerPort( int bundleServerPort ) {
+        this.bundleServerPort = bundleServerPort;
     }
 
     public String getVmParameters() {
@@ -217,26 +197,6 @@ public class FelixRunConfiguration extends RunConfigurationBase implements Modul
                 }
             } );
         }
-        if( this.enableHotDeploy ) {
-            if( this.hotDeployDirectories == null || this.hotDeployDirectories.isEmpty() ) {
-                throw new RuntimeConfigurationError( "Hot deployment directory is empty" );
-            }
-            for( final File directory : this.hotDeployDirectories ) {
-                if( directory == null || !directory.isDirectory() ) {
-                    throw new RuntimeConfigurationWarning( "Hot deployment directory does not exist.", new Runnable() {
-
-                        @Override
-                        public void run() {
-                            try {
-                                FileUtils.forceMkdir( directory );
-                            } catch( IOException e ) {
-                                LOG.warn( "Could not create directory: " + directory, e );
-                            }
-                        }
-                    } );
-                }
-            }
-        }
         if( this.bundles.isEmpty() ) {
             throw new RuntimeConfigurationWarning( "No bundles were selected for deployment" );
         }
@@ -270,6 +230,18 @@ public class FelixRunConfiguration extends RunConfigurationBase implements Modul
             this.felixLogLevel = DEFAULT_FELIX_LOG_LEVEL;
         }
 
+        Element bundleServerPort = element.getChild( "bundle-server-port" );
+        if( bundleServerPort != null ) {
+            String port = bundleServerPort.getAttributeValue( "value" );
+            try {
+                this.bundleServerPort = Integer.parseInt( port );
+            } catch( NumberFormatException e ) {
+                this.bundleServerPort = DEFAULT_BUNDLE_SERVER_PORT;
+            }
+        } else {
+            this.bundleServerPort = DEFAULT_BUNDLE_SERVER_PORT;
+        }
+
         Element workingDirectoryElement = element.getChild( "working-directory" );
         if( workingDirectoryElement != null ) {
             String path = workingDirectoryElement.getText();
@@ -286,25 +258,6 @@ public class FelixRunConfiguration extends RunConfigurationBase implements Modul
             }
         }
 
-        Element hotDeployElement = element.getChild( "hot-deploy" );
-        if( hotDeployElement != null ) {
-            this.enableHotDeploy = Boolean.parseBoolean( hotDeployElement.getAttributeValue( "enabled" ) );
-            if( this.enableHotDeploy ) {
-                @SuppressWarnings( { "unchecked" } )
-                List<Element> hotDeployDirectoryElements = hotDeployElement.getChildren( "directory" );
-                List<File> hotDeployDirectories = new LinkedList<File>();
-                for( Element hotDeployDirectoryElement : hotDeployDirectoryElements ) {
-                    if( isNotBlank( hotDeployDirectoryElement.getText() ) ) {
-                        hotDeployDirectories.add( new File( hotDeployDirectoryElement.getText() ) );
-                    }
-                }
-                this.hotDeployDirectories = hotDeployDirectories;
-            }
-        } else {
-            this.enableHotDeploy = false;
-            this.hotDeployDirectories = null;
-        }
-
         Element vmParamsElement = element.getChild( "vm-parameters" );
         if( vmParamsElement != null ) {
             this.vmParameters = vmParamsElement.getText();
@@ -319,12 +272,7 @@ public class FelixRunConfiguration extends RunConfigurationBase implements Modul
             for( Element moduleElement : moduleElements ) {
                 String moduleName = moduleElement.getAttributeValue( "name" );
                 if( moduleName != null && moduleName.trim().length() > 0 ) {
-                    String deployDir = moduleElement.getAttributeValue( "deploy-dir" );
-                    bundles.add( new ModuleDeploymentInfoImpl(
-                        getProject(),
-                        moduleName,
-                        deployDir == null ? null : new File( deployDir ),
-                        Boolean.valueOf( moduleElement.getAttributeValue( "include-version" ) ) ) );
+                    bundles.add( new ModuleDeploymentInfoImpl( getProject(), moduleName ) );
                 }
             }
 
@@ -335,14 +283,7 @@ public class FelixRunConfiguration extends RunConfigurationBase implements Modul
                 String artifactId = artifactElement.getAttributeValue( "artifact-id" );
                 String version = artifactElement.getAttributeValue( "version" );
                 if( groupId != null && artifactId != null && version != null ) {
-                    String deployDir = artifactElement.getAttributeValue( "deploy-dir" );
-                    bundles.add( new ArtifactFileDeploymentInfoImpl(
-                        getProject(),
-                        groupId,
-                        artifactId,
-                        version,
-                        deployDir == null ? null : new File( deployDir ),
-                        Boolean.valueOf( artifactElement.getAttributeValue( "include-version" ) ) ) );
+                    bundles.add( new ArtifactFileDeploymentInfoImpl( getProject(), groupId, artifactId, version ) );
                 }
             }
         }
@@ -379,20 +320,6 @@ public class FelixRunConfiguration extends RunConfigurationBase implements Modul
         }
 
         //
-        // hot-deploy settings
-        //
-        Element hotDeployElement = new Element( "hot-deploy" );
-        hotDeployElement.setAttribute( "enabled", this.enableHotDeploy + "" );
-        if( this.enableHotDeploy && this.hotDeployDirectories != null ) {
-            for( File hotDeployDirectory : this.hotDeployDirectories ) {
-                Element directoryElement = new Element( "directory" );
-                directoryElement.setText( hotDeployDirectory.getAbsolutePath() );
-                hotDeployElement.addContent( directoryElement );
-            }
-        }
-        element.addContent( hotDeployElement );
-
-        //
         // vm parameters
         //
         Element vmParamsElement = new Element( "vm-parameters" );
@@ -410,25 +337,11 @@ public class FelixRunConfiguration extends RunConfigurationBase implements Modul
                 artifactInfoElement.setAttribute( "group-id", artifactInfo.getGroupId() );
                 artifactInfoElement.setAttribute( "artifact-id", artifactInfo.getArtifactId() );
                 artifactInfoElement.setAttribute( "version", artifactInfo.getMavenVersion() );
-
-                File deployDir = artifactInfo.getDeployDir();
-                if( deployDir != null ) {
-                    artifactInfoElement.setAttribute( "deploy-dir", deployDir.getAbsolutePath() );
-                }
-
-                artifactInfoElement.setAttribute( "include-version", artifactInfo.getIncludeVersionInFilename() + "" );
                 deploymentElement.addContent( artifactInfoElement );
             } else if( bundle instanceof ModuleDeploymentInfo ) {
                 ModuleDeploymentInfo moduleInfo = ( ModuleDeploymentInfo ) bundle;
                 Element moduleElement = new Element( "module" );
                 moduleElement.setAttribute( "name", moduleInfo.getModuleName() );
-
-                File deployDir = moduleInfo.getDeployDir();
-                if( deployDir != null ) {
-                    moduleElement.setAttribute( "deploy-dir", deployDir.getAbsolutePath() );
-                }
-
-                moduleElement.setAttribute( "include-version", moduleInfo.getIncludeVersionInFilename() + "" );
                 deploymentElement.addContent( moduleElement );
             }
         }

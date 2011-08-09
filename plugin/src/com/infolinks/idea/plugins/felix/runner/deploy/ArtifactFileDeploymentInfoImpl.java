@@ -19,22 +19,11 @@ public class ArtifactFileDeploymentInfoImpl implements ArtifactDeploymentInfo {
 
     private final String mavenVersion;
 
-    private File deployDir;
-
-    private boolean includeVersionInFilename;
-
-    public ArtifactFileDeploymentInfoImpl( Project project,
-                                           String groupId,
-                                           String artifactId,
-                                           String mavenVersion,
-                                           File deployDir,
-                                           boolean includeVersionInFilename ) {
+    public ArtifactFileDeploymentInfoImpl( Project project, String groupId, String artifactId, String mavenVersion ) {
         this.project = project;
         this.groupId = groupId;
         this.artifactId = artifactId;
         this.mavenVersion = mavenVersion;
-        this.deployDir = deployDir;
-        this.includeVersionInFilename = includeVersionInFilename;
     }
 
     @Override
@@ -59,15 +48,6 @@ public class ArtifactFileDeploymentInfoImpl implements ArtifactDeploymentInfo {
     }
 
     @Override
-    public boolean getIncludeVersionInFilename() {
-        return this.includeVersionInFilename;
-    }
-
-    public void setIncludeVersionInFilename( boolean includeVersionInFilename ) {
-        this.includeVersionInFilename = includeVersionInFilename;
-    }
-
-    @Override
     public File getFile() {
         MavenProjectsManager projectsManager = MavenProjectsManager.getInstance( this.project );
         if( projectsManager == null ) {
@@ -87,21 +67,7 @@ public class ArtifactFileDeploymentInfoImpl implements ArtifactDeploymentInfo {
 
     @Override
     public String getDeployFilename() {
-        if( this.includeVersionInFilename ) {
-            return this.groupId + "-" + this.artifactId + "-" + getOsgiVersion() + ".jar";
-        } else {
-            return this.groupId + "-" + this.artifactId + ".jar";
-        }
-    }
-
-    @Override
-    public File getDeployDir() {
-        return this.deployDir;
-    }
-
-    @Override
-    public void setDeployDir( File deployDir ) {
-        this.deployDir = deployDir;
+        return this.groupId + "-" + this.artifactId + "-" + getOsgiVersion() + ".jar";
     }
 
     @Override
@@ -167,7 +133,7 @@ public class ArtifactFileDeploymentInfoImpl implements ArtifactDeploymentInfo {
             return this.mavenVersion;
         }
 
-        BundleInfo bundleInfo = BundleInfoManager.getInstance(this.project).getBundleInfo( file );
+        BundleInfo bundleInfo = BundleInfoManager.getInstance( this.project ).getBundleInfo( file );
         if( bundleInfo == null ) {
             return this.mavenVersion;
         }

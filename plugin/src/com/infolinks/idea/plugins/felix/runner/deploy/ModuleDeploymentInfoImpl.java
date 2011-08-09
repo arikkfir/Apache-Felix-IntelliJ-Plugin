@@ -18,18 +18,9 @@ public class ModuleDeploymentInfoImpl implements ModuleDeploymentInfo {
 
     private final String moduleName;
 
-    private File deployDir;
-
-    private boolean includeVersionInFilename;
-
-    public ModuleDeploymentInfoImpl( Project project,
-                                     String moduleName,
-                                     File deployDir,
-                                     boolean includeVersionInFilename ) {
+    public ModuleDeploymentInfoImpl( Project project, String moduleName ) {
         this.project = project;
         this.moduleName = moduleName;
-        this.deployDir = deployDir;
-        this.includeVersionInFilename = includeVersionInFilename;
     }
 
     @Override
@@ -76,30 +67,7 @@ public class ModuleDeploymentInfoImpl implements ModuleDeploymentInfo {
         }
 
         MavenId mavenId = mavenProject.getMavenId();
-        if( this.includeVersionInFilename ) {
-            return mavenId.getGroupId() + "-" + mavenId.getArtifactId() + "-" + mavenId.getVersion() + ".jar";
-        } else {
-            return mavenId.getGroupId() + "-" + mavenId.getArtifactId() + ".jar";
-        }
-    }
-
-    @Override
-    public File getDeployDir() {
-        return this.deployDir;
-    }
-
-    @Override
-    public void setDeployDir( File deployDir ) {
-        this.deployDir = deployDir;
-    }
-
-    @Override
-    public boolean getIncludeVersionInFilename() {
-        return this.includeVersionInFilename;
-    }
-
-    public void setIncludeVersionInFilename( boolean includeVersionInFilename ) {
-        this.includeVersionInFilename = includeVersionInFilename;
+        return mavenId.getGroupId() + "-" + mavenId.getArtifactId() + "-" + mavenId.getVersion() + ".jar";
     }
 
     @Override

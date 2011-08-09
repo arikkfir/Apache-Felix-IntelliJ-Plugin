@@ -1,19 +1,22 @@
 package com.infolinks.idea.plugins.felix.runner;
 
 import com.google.common.io.Files;
-import com.google.common.io.Resources;
 import com.infolinks.idea.plugins.felix.framework.FelixFrameworkManager;
-import com.infolinks.idea.plugins.felix.runner.deploy.ArtifactDeploymentInfo;
 import com.infolinks.idea.plugins.felix.runner.deploy.BundleDeploymentInfo;
-import com.infolinks.idea.plugins.felix.runner.deploy.ModuleDeploymentInfo;
 import com.intellij.openapi.components.AbstractProjectComponent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
+import java.io.*;
+import java.net.ConnectException;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.net.URL;
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import org.codehaus.plexus.util.IOUtil;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import static java.util.Locale.ENGLISH;
@@ -35,8 +38,6 @@ public class FelixBundlesDeployer extends AbstractProjectComponent {
 
     private final Logger logger = Logger.getInstance( "#" + getClass().getName() );
 
-    private static final String FILE_INSTALL_FILENAME = "org.apache.felix.fileinstall-3.1.10.jar";
-
     public FelixBundlesDeployer( Project project ) {
         super( project );
     }
@@ -45,25 +46,28 @@ public class FelixBundlesDeployer extends AbstractProjectComponent {
         //
         // deploy bundles selected in the run configuration
         //
-        Map<File, Set<File>> deployedBundles = deploySelectedBundles( runConfiguration );
+        Set<File> deployedBundles = deploySelectedBundles( runConfiguration );
 
         //
         // copy felix distribution jars to 'bundles' directory
         //
-        deployedBundles.get( runConfiguration.getBundlesDirectory() ).addAll( deployFelixDistJars( runConfiguration ) );
+        deployedBundles.addAll( deployFelixDistJars( runConfiguration ) );
 
         //
-        // copy file-install bundle to 'bundles' directory
+        // copy bundle server JAR to 'bundles' directory
         //
-        File fileInstallBundle = copyOrDeleteFileInstallBundle( runConfiguration );
-        if( fileInstallBundle != null ) {
-            deployedBundles.get( runConfiguration.getBundlesDirectory() ).add( fileInstallBundle );
+        File bundleServerFile = new File( runConfiguration.getBundlesDirectory(), "bundle-server.jar" );
+        try {
+            copyURLToFile( getBundleServerResource(), bundleServerFile );
+            deployedBundles.add( bundleServerFile );
+        } catch( Exception e ) {
+            throw new DeploymentException( "Could not deploy bundle-server OSGi bundle to Felix: " + e.getMessage(), e );
         }
 
         //
         // remove any file not part of the deployment (from older runs usually)
         //
-        removeUnrelatedBundles( deployedBundles );
+        removeUnrelatedBundles( runConfiguration, deployedBundles );
     }
 
     private List<File> deployFelixDistJars( FelixRunConfiguration runConfiguration ) throws DeploymentException {
@@ -90,92 +94,81 @@ public class FelixBundlesDeployer extends AbstractProjectComponent {
         return deployedFiles;
     }
 
-    public Map<File, Set<File>> deploySelectedBundles( FelixRunConfiguration runConfiguration )
-            throws DeploymentException {
+    public Set<File> deploySelectedBundles( FelixRunConfiguration runConfiguration ) throws DeploymentException {
         return deploySelectedBundles( runConfiguration, null );
     }
 
-    public Map<File, Set<File>> deploySelectedBundles( FelixRunConfiguration runConfiguration,
-                                                       @Nullable ModuleDeploymentFilter filter )
-            throws DeploymentException {
+    public Set<File> deploySelectedBundles( FelixRunConfiguration runConfiguration,
+                                            @Nullable ModuleDeploymentFilter filter )
+        throws DeploymentException {
 
         ensureDirectoryExists( runConfiguration.getBundlesDirectory() );
-        List<File> hotDeployDirectories = runConfiguration.getHotDeployDirectories();
-        if( runConfiguration.isEnableHotDeploy() ) {
-            for( File hotDeployDirectory : hotDeployDirectories ) {
-                ensureDirectoryExists( hotDeployDirectory );
-            }
-        }
 
-        Map<File, Set<File>> deployedFiles = new HashMap<File, Set<File>>();
+        Set<File> deployedFiles = new HashSet<File>();
         for( BundleDeploymentInfo bundle : runConfiguration.getBundles() ) {
             File file = bundle.getFile();
             if( file != null && file.isFile() && ( filter == null || filter.shouldDeploy( bundle ) ) ) {
-                File deployDir = bundle.getDeployDir();
-                if( deployDir == null ) {
-                    if( bundle instanceof ArtifactDeploymentInfo ) {
-                        deployDir = runConfiguration.getBundlesDirectory();
-                    } else if( bundle instanceof ModuleDeploymentInfo ) {
-                        if( runConfiguration.isEnableHotDeploy() && !hotDeployDirectories.isEmpty() ) {
-                            deployDir = hotDeployDirectories.get( 0 );
-                        } else {
-                            deployDir = runConfiguration.getBundlesDirectory();
-                        }
-                    } else {
-                        throw new DeploymentException( "Internal error - unknown bundle deployment info (" + bundle.getClass().getName() + ")" );
-                    }
-                }
-
-                Set<File> filesDeployedToThisDeployDir = deployedFiles.get( deployDir );
-                if( filesDeployedToThisDeployDir == null ) {
-                    filesDeployedToThisDeployDir = new HashSet<File>();
-                    deployedFiles.put( deployDir, filesDeployedToThisDeployDir );
-                }
+                File deployDir = runConfiguration.getBundlesDirectory();
 
                 File targetFile = new File( deployDir, bundle.getDeployFilename() );
                 this.logger.info( "Deploying '" + file + "' to '" + targetFile + "'" );
 
-                if( filesDeployedToThisDeployDir.contains( targetFile ) ) {
+                if( deployedFiles.contains( targetFile ) ) {
                     throw new DeploymentException( "More than one bundle with name '" + targetFile.getName() + "' is set to be deployed to '" + deployDir + "'" );
                 }
 
                 try {
-                    copyFileIfModified( file, targetFile );
+                    boolean newBundle = !targetFile.exists();
+
+                    if( copyFileIfModified( file, targetFile ) ) {
+                        Socket socket = null;
+                        BufferedReader reader = null;
+                        Writer writer = null;
+                        try {
+                            socket = new Socket( InetAddress.getLocalHost(), runConfiguration.getBundleServerPort() );
+                            socket.setKeepAlive( false );
+                            socket.setSoTimeout( 30000 );//TODO arik (8/9/11): make this configurable
+                            reader = new BufferedReader( new InputStreamReader( socket.getInputStream(), "UTF-8" ), 8096 );
+                            writer = new OutputStreamWriter( socket.getOutputStream(), "UTF-8" );
+
+                            if( newBundle ) {
+                                writer.write( "INSTALL:" + targetFile.getAbsolutePath() + "\n" );
+                            } else {
+                                writer.write( "UPDATE:" + bundle.getSymbolicName() + ":" + bundle.getOsgiVersion() + "\n" );
+                            }
+                            writer.flush();
+
+                        } catch( ConnectException ignore ) {
+                            //ignore
+
+                        } catch( Exception e ) {
+                            //TODO arik (8/9/11): report error
+                            e.printStackTrace();
+
+                        } finally {
+                            try {
+                                if( socket != null ) {
+                                    socket.close();
+                                }
+                            } catch( Exception ignore ) {
+                                //no-op
+                            }
+                            IOUtil.close( reader );
+                            IOUtil.close( writer );
+                        }
+                    }
+                    deployedFiles.add( targetFile );
                 } catch( IOException e ) {
                     throw new DeploymentException( "Could not deploy bundle '" + file + "': " + e.getMessage(), e );
                 }
-                filesDeployedToThisDeployDir.add( targetFile );
             }
         }
 
         return deployedFiles;
     }
 
-    private File copyOrDeleteFileInstallBundle( FelixRunConfiguration runConfiguration ) throws DeploymentException {
-        File destFileInstallFile = new File( runConfiguration.getBundlesDirectory(), FILE_INSTALL_FILENAME );
-        if( runConfiguration.isEnableHotDeploy() ) {
-            try {
-                this.logger.info( "Copying '" + getFileInstallBundleResource() + "' to '" + destFileInstallFile + "'" );
-                Files.copy( Resources.newInputStreamSupplier( getFileInstallBundleResource() ), destFileInstallFile );
-                return destFileInstallFile;
-            } catch( IOException e ) {
-                throw new DeploymentException( "Could not copy Apache Felix File Install bundle to bundles directory: " + e.getMessage(), e );
-            }
-
-        } else {
-            if( destFileInstallFile.exists() ) {
-                try {
-                    this.logger.info( "Deleting '" + destFileInstallFile + "'" );
-                    Files.deleteRecursively( destFileInstallFile );
-                } catch( IOException e ) {
-                    throw new DeploymentException( "Could not remove Apache Felix File Install bundle from bundles directory: " + e.getMessage(), e );
-                }
-            }
-            return null;
-        }
-    }
-
-    private void removeUnrelatedBundles( Map<File, Set<File>> deployedBundlesByDeployDir ) throws DeploymentException {
+    private void removeUnrelatedBundles( FelixRunConfiguration runConfiguration, Set<File> deployedBundlesByDeployDir )
+        throws DeploymentException {
 
         FilenameFilter jarFilesFilter = new FilenameFilter() {
 
@@ -185,25 +178,23 @@ public class FelixBundlesDeployer extends AbstractProjectComponent {
             }
         };
 
-        for( File deployDir : deployedBundlesByDeployDir.keySet() ) {
-            Set<File> deployedBundles = deployedBundlesByDeployDir.get( deployDir );
-            for( File jar : deployDir.listFiles( jarFilesFilter ) ) {
-                if( !deployedBundles.contains( jar ) ) {
-                    try {
-                        this.logger.info( "Deleting '" + jar + "'" );
-                        forceDelete( jar );
-                    } catch( IOException e ) {
-                        throw new DeploymentException( "Could not delete old bundle '" + jar.getName() + "': " + e.getMessage(), e );
-                    }
+        for( File jar : runConfiguration.getBundlesDirectory().listFiles( jarFilesFilter ) ) {
+            if( !deployedBundlesByDeployDir.contains( jar ) ) {
+                try {
+                    this.logger.info( "Deleting '" + jar + "'" );
+                    forceDelete( jar );
+                } catch( IOException e ) {
+                    throw new DeploymentException( "Could not delete old bundle '" + jar.getName() + "': " + e.getMessage(), e );
                 }
             }
         }
     }
 
-    private URL getFileInstallBundleResource() throws DeploymentException {
-        URL resource = getClass().getClassLoader().getResource( "bundles/" + FILE_INSTALL_FILENAME );
+    @NotNull
+    private URL getBundleServerResource() throws DeploymentException {
+        URL resource = getClass().getClassLoader().getResource( "bundles/bundle-server.jar" );
         if( resource == null ) {
-            throw new DeploymentException( "Apache Felix FileInstall bundle could not be found in Apache Felix bundle (this should not happen, please report this)." );
+            throw new DeploymentException( "Could not find Bundle Server OSGi bundle (should be bundled inside the Apache Felix IntelliJ Plugin, but it is missing). This should not happen, please report this." );
         } else {
             return resource;
         }

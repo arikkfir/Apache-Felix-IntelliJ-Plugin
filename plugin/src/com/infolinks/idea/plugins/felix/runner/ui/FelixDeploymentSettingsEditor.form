@@ -23,7 +23,7 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="47d44" class="com.infolinks.idea.plugins.felix.runner.ui.AvailableBundlesTable" binding="availableBundlesTable">
+              <component id="47d44" class="com.infolinks.idea.plugins.felix.runner.ui.BundlesTable" binding="availableBundlesTable">
                 <constraints/>
                 <properties>
                   <preferredScrollableViewportSize width="200" height="400"/>
@@ -48,7 +48,7 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="b4802" class="com.infolinks.idea.plugins.felix.runner.ui.SelectedBundlesTable" binding="selectedBundlesTable">
+              <component id="b4802" class="com.infolinks.idea.plugins.felix.runner.ui.BundlesTable" binding="selectedBundlesTable">
                 <constraints/>
                 <properties>
                   <preferredScrollableViewportSize width="200" height="400"/>

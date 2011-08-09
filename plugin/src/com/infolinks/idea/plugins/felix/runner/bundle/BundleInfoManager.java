@@ -79,14 +79,14 @@ public class BundleInfoManager extends AbstractProjectComponent {
                 OsgiBundleFacet osgiBundleFacet = getOsgiBundleFacet( module );
                 MavenProject mavenProject = helper.getMavenProject();
                 if( osgiBundleFacet != null ) {
-                    bundleDeploymentInfos.add( new ModuleDeploymentInfoImpl( this.myProject, module.getName(), null, false ) );
+                    bundleDeploymentInfos.add( new ModuleDeploymentInfoImpl( this.myProject, module.getName() ) );
 
                     for( MavenArtifact dependency : mavenProject.getDependencies() ) {
                         if( !dependency.getScope().equalsIgnoreCase( Artifact.SCOPE_TEST ) ) {
                             MavenProject project = MavenProjectsManager.getInstance( this.myProject ).findProject( dependency );
                             if( project == null ) {
                                 if( !dependency.getGroupId().equalsIgnoreCase( "org.apache.felix" ) || !dependency.getArtifactId().equalsIgnoreCase( "org.apache.felix.fileinstall" ) ) {
-                                    bundleDeploymentInfos.add( new ArtifactFileDeploymentInfoImpl( this.myProject, dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion(), null, false ) );
+                                    bundleDeploymentInfos.add( new ArtifactFileDeploymentInfoImpl( this.myProject, dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion() ) );
                                 }
                             }
                         }
