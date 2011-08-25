@@ -1,6 +1,7 @@
 <idea-plugin version="2" url="https://github.com/arikkfir/Apache-Felix-IntelliJ-Plugin">
 
     <id>apache-felix-plugin</id>
+    <vendor email="arik.kfir@gmail.com">Arik Kfir</vendor>
     <name>Apache Felix</name>
     <description><![CDATA[
         <html>
@@ -27,9 +28,9 @@
         <p>Developed by Arik Kfir at Infolinks Inc.</p>
         </html>
         ]]></description>
-    <vendor email="arik.kfir@gmail.com">Arik Kfir</vendor>
 
     <version>1.2.1</version>
+    <idea-version since-build="99.18"/>
     <change-notes><![CDATA[
         <p>1.2.1 (development)</p>
         <ul>
@@ -164,8 +165,6 @@
             </li>
         </ul>
         ]]></change-notes>
-
-    <idea-version since-build="99.18"/>
 
     <!-- we depend on Maven integration API -->
     <depends>org.jetbrains.idea.maven</depends>
