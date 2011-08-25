@@ -29,9 +29,14 @@
         </html>
         ]]></description>
 
-    <version>1.2.1</version>
+    <version>1.2.2</version>
     <idea-version since-build="99.18"/>
     <change-notes><![CDATA[
+        <p>1.2.2 (under development)</p>
+        <ul>
+            <li>No changes yet...</li>
+        </ul>
+
         <p>1.2.1</p>
         <ul>
             <li>Prevent a null pointer exception in case of non-bundles deployed to the container.</li>
