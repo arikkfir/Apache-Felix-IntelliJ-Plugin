@@ -32,7 +32,7 @@
     <version>1.2.1</version>
     <idea-version since-build="99.18"/>
     <change-notes><![CDATA[
-        <p>1.2.1 (development)</p>
+        <p>1.2.1</p>
         <ul>
             <li>Prevent a null pointer exception in case of non-bundles deployed to the container.</li>
         </ul>
