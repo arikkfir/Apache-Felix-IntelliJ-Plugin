@@ -184,9 +184,15 @@ public class Listener {
 
         private Bundle findBundle( String symbolicName, Version version ) throws BadCommandException {
             for( Bundle bundle : this.bundleContext.getBundles() ) {
-                if( bundle.getSymbolicName().equals( symbolicName ) && bundle.getVersion().equals( version ) ) {
-                    return bundle;
+                String currentSymbolicName = bundle.getSymbolicName();
+                if( currentSymbolicName == null || !currentSymbolicName.equals( symbolicName ) ) {
+                    continue;
                 }
+                Version currentVersion = bundle.getVersion();
+                if( currentVersion == null || !currentVersion.equals( version ) ) {
+                    continue;
+                }
+                return bundle;
             }
             throw new BadCommandException( "Bundle '" + symbolicName + "-" + version + "' could not be found" );
         }
