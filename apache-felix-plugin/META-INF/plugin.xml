@@ -33,7 +33,7 @@
     <change-notes><![CDATA[
         <p>1.2.1 (development)</p>
         <ul>
-            <li>No changes yet...</li>
+            <li>Prevent a null pointer exception in case of non-bundles deployed to the container.</li>
         </ul>
 
         <p>1.2.0</p>
