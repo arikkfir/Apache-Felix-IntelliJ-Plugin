@@ -32,7 +32,7 @@
     <version>1.3.1</version>
     <idea-version since-build="99.18"/>
     <change-notes><![CDATA[
-        <p>1.3.1 (development)</p>
+        <p>1.3.1</p>
         <ul>
             <li>Hide Gogo bundles as they are automatically deployed from the Felix distribution directory.</li>
             <li>Prevent deployment of JARs which are not OSGi bundles.</li>
