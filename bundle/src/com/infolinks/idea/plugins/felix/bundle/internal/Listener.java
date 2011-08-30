@@ -218,45 +218,5 @@ public class Listener {
             printKnownError( out, e );
         }
     }
-
-    /*
-        public static void main( String[] args ) {
-            printMatch( "INSTALL" );
-            printMatch( "INSTALL:" );
-            printMatch( "INSTALL:arik" );
-            printMatch( "INSTALL:arik:" );
-            printMatch( "INSTALL:arik:1.1.1" );
-            printMatch( "UPDATE" );
-            printMatch( "UPDATE:" );
-            printMatch( "UPDATE:bsn" );
-            printMatch( "UPDATE:bsn:" );
-            printMatch( "UPDATE:bsn:ver" );
-            printMatch( "UPDATE:bsn:ver:" );
-            printMatch( "UPDATE:bsn:ver:extra" );
-            printMatch( "UNINSTALL" );
-            printMatch( "UNINSTALL:" );
-            printMatch( "UNINSTALL:bsn" );
-            printMatch( "UNINSTALL:bsn:" );
-            printMatch( "UNINSTALL:bsn:ver" );
-            printMatch( "UNINSTALL:bsn:ver:" );
-            printMatch( "UNINSTALL:bsn:ver:extra" );
-        }
-
-        private static void printMatch( String input ) {
-            System.out.println( "Input:   " + input );
-
-            Matcher matcher = Pattern.compile( "INSTALL:([^:]+)|UPDATE:([^:]+):([^:]+)|UNINSTALL:([^:]+):([^:]+)" ).matcher( input );
-            System.out.println( "Matches: " + matcher.matches() );
-
-            if( matcher.matches() ) {
-                System.out.println( "Groups: " );
-                for( int i = 1; i <= matcher.groupCount(); i++ ) {
-                    System.out.println( "    " + i + ": " + matcher.group( i ) );
-                }
-            }
-            System.out.println();
-            System.out.println();
-        }
-    */
 }
 
