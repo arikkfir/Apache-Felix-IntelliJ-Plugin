@@ -29,12 +29,12 @@
         </html>
         ]]></description>
 
-    <version>1.2.2</version>
+    <version>1.3.0</version>
     <idea-version since-build="99.18"/>
     <change-notes><![CDATA[
-        <p>1.2.2 (under development)</p>
+        <p>1.3.0 (under development)</p>
         <ul>
-            <li>No changes yet...</li>
+            <li>Support the "Embed-Dependency" instruction.</li>
         </ul>
 
         <p>1.2.1</p>

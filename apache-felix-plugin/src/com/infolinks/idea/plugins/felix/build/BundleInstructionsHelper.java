@@ -100,7 +100,7 @@ public class BundleInstructionsHelper implements ModuleComponent {
         MavenProject mavenProject = getMavenProject();
 
         Properties properties = new Properties();
-        properties.putAll( getGeneralBundleInstructions() );
+        properties.putAll( getGeneralBundleProperties() );
         properties.putAll( getManualInstructionsFromPom() );
 
         Builder builder = new Builder();
@@ -115,7 +115,7 @@ public class BundleInstructionsHelper implements ModuleComponent {
         addLocalPackages( builder );
 
         // embed dependencies if requested to
-        //TODO: embedDependencies( builder );
+        embedDependencies( builder );
 
         File outputDirectory = new File( mavenProject.getOutputDirectory() );
         FileUtils.forceMkdir( outputDirectory );
@@ -124,7 +124,7 @@ public class BundleInstructionsHelper implements ModuleComponent {
     }
 
     @NotNull
-    public Properties getGeneralBundleInstructions() {
+    public Properties getGeneralBundleProperties() {
         MavenProject mavenProject = getMavenProject();
         MavenId mavenId = mavenProject.getMavenId();
         String bsn = VersionUtils.getBundleSymbolicName( mavenId.getGroupId(), mavenId.getArtifactId() );
@@ -317,6 +317,10 @@ public class BundleInstructionsHelper implements ModuleComponent {
             // if there are really no private packages then use "!*" as this will keep the Bnd Tool happy
             analyzer.setProperty( Analyzer.PRIVATE_PACKAGE, privatePkgs.length() == 0 ? "!*" : privatePkgs.toString() );
         }
+    }
+
+    public void embedDependencies( @NotNull Analyzer analyzer ) {
+        new DependencyEmbedder( getMavenProject().getDependencies() ).processHeaders( analyzer );
     }
 
     @NotNull

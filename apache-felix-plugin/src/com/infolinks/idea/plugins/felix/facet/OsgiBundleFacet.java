@@ -87,6 +87,7 @@ public class OsgiBundleFacet extends Facet<OsgiBundleFacetConfiguration> {
             if( helper == null ) {
                 throw new IllegalStateException( "Module '" + getModule().getName() + "' is not a Maven module! (Maven OSGi facet associated with a non-Maven project)" );
             }
+
             MavenProject mavenProject = helper.getMavenProject();
             File buildDir = new File( mavenProject.getBuildDirectory() );
             FileUtils.forceMkdir( buildDir );
