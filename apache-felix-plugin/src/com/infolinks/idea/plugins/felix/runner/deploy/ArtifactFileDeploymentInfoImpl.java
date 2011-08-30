@@ -43,6 +43,11 @@ public class ArtifactFileDeploymentInfoImpl implements ArtifactDeploymentInfo {
 
     @Override
     public boolean isValid() {
+        BundleInfo bundleInfo = BundleInfoManager.getInstance( this.project ).getBundleInfo( getFile() );
+        if( bundleInfo == null ) {
+            return false;
+        }
+
         File file = getFile();
         return file != null && file.isFile();
     }
