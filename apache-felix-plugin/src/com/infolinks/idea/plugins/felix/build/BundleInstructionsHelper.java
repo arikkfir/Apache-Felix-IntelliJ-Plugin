@@ -202,7 +202,7 @@ public class BundleInstructionsHelper implements ModuleComponent {
                         file = dependency.getFile();
                     }
 
-                    if( file.exists() ) {
+                    if( file.exists() && file.getName().toLowerCase().endsWith( ".jar" ) ) {
                         Jar jar = new Jar( file );
                         list.add( jar );
                     }
