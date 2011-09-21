@@ -196,7 +196,7 @@ public final class DependencyEmbedder extends AbstractDependencyFilter {
     }
 
 
-    public Collection getEmbeddedArtifacts() {
+    public Collection<MavenArtifact> getEmbeddedArtifacts() {
         return m_embeddedArtifacts;
     }
 

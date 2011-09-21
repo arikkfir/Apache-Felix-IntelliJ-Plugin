@@ -11,19 +11,19 @@
             projects developed using Apache Felix and the Apache Felix Maven Bundle Plugin.</p>
 
         <p>Using this plugin, developers can run and debug OSGi applications using the Apache Felix OSGi container. The
-        plugin allows the user to choose bundles and modules for deployment, updates installed bundles in a running
-        container whenever they are built (e.g. hot-deploy), etc.</p>
+            plugin allows the user to choose bundles and modules for deployment, updates installed bundles in a running
+            container whenever they are built (e.g. hot-deploy), etc.</p>
 
         <p>The plugin provides a new type of run configuration: Apache Felix run configuration. The configuration of this
-        run configuration allows the developer to choose which bundles to deploy, The list of available bundles for
-        deployment is comprised of all modules with packaging of "bundle", and their dependencies. Non-Maven modules (or
-        Maven modules not of packaging "bundle") are ignored.</p>
+            run configuration allows the developer to choose which bundles to deploy, The list of available bundles for
+            deployment is comprised of all modules with packaging of "bundle", and their dependencies. Non-Maven modules (or
+            Maven modules not of packaging "bundle") are ignored.</p>
 
         <p><strong>NOTE: This plugin contains code snippets copied from Apache Felix's Maven Bundle Plugin. These were
-        because there was no easy way to directly invoke the Maven plugin. It is the intention of this plugin writer
-        to contact Apache Felix and work together to refactor the code so that it is easily invokable from outside the
-        Maven execution context (e.g. in IDEA's Maven support context), and to eventually contribute the code to the
-        Apache Felix project umbrella.</strong></p>
+            because there was no easy way to directly invoke the Maven plugin. It is the intention of this plugin writer
+            to contact Apache Felix and work together to refactor the code so that it is easily invokable from outside the
+            Maven execution context (e.g. in IDEA's Maven support context), and to eventually contribute the code to the
+            Apache Felix project umbrella.</strong></p>
 
         <p>Developed by Arik Kfir at Infolinks Inc.</p>
         </html>
@@ -34,7 +34,9 @@
     <change-notes><![CDATA[
         <p>1.3.2 (development)</p>
         <ul>
-            <li>No changes yet...</li>
+            <li>Hide embedded bundles in the run-configuration deployment tab (unless they are used by another module
+            which does not embed them.)</li>
+            <li>Hide <b>org.osgi.core</b> and <b>org.osgi.compendium</b> bundles as they are provided by Felix core.</li>
         </ul>
 
         <p>1.3.1</p>

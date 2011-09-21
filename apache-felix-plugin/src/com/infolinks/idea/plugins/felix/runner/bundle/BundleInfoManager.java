@@ -3,6 +3,7 @@ package com.infolinks.idea.plugins.felix.runner.bundle;
 
 import aQute.lib.osgi.Jar;
 import com.infolinks.idea.plugins.felix.build.BundleInstructionsHelper;
+import com.infolinks.idea.plugins.felix.build.DependencyEmbedder;
 import com.infolinks.idea.plugins.felix.facet.OsgiBundleFacet;
 import com.infolinks.idea.plugins.felix.runner.deploy.ArtifactFileDeploymentInfoImpl;
 import com.infolinks.idea.plugins.felix.runner.deploy.BundleDeploymentInfo;
@@ -75,30 +76,48 @@ public class BundleInfoManager extends AbstractProjectComponent {
 
         for( Module module : ModuleManager.getInstance( this.myProject ).getSortedModules() ) {
             BundleInstructionsHelper helper = BundleInstructionsHelper.getInstance( module );
-            if( helper != null ) {
-                OsgiBundleFacet osgiBundleFacet = getOsgiBundleFacet( module );
-                MavenProject mavenProject = helper.getMavenProject();
-                if( osgiBundleFacet != null ) {
-                    bundleDeploymentInfos.add( new ModuleDeploymentInfoImpl( this.myProject, module.getName() ) );
+            if( helper == null ) {
+                continue;
+            }
 
-                    for( MavenArtifact dependency : mavenProject.getDependencies() ) {
-                        if( !dependency.getScope().equalsIgnoreCase( Artifact.SCOPE_TEST ) ) {
-                            MavenProject project = MavenProjectsManager.getInstance( this.myProject ).findProject( dependency );
-                            if( project == null ) {
-                                String groupId = dependency.getGroupId();
-                                String artifactId = dependency.getArtifactId();
-                                if( !"org.apache.felix".equals( groupId ) || !artifactId.startsWith( "org.apache.felix.gogo." ) ) {
-                                    BundleDeploymentInfo info = new ArtifactFileDeploymentInfoImpl(
-                                            this.myProject,
-                                            groupId,
-                                            artifactId,
-                                            dependency.getVersion() );
-                                    if( info.isValid() ) {
-                                        bundleDeploymentInfos.add( info );
-                                    }
-                                }
-                            }
+            OsgiBundleFacet osgiBundleFacet = getOsgiBundleFacet( module );
+            MavenProject mavenProject = helper.getMavenProject();
+            if( osgiBundleFacet == null ) {
+                continue;
+            }
+
+            bundleDeploymentInfos.add( new ModuleDeploymentInfoImpl( this.myProject, module.getName() ) );
+
+            for( MavenArtifact dependency : mavenProject.getDependencies() ) {
+                if( !dependency.getScope().equalsIgnoreCase( Artifact.SCOPE_TEST ) ) {
+                    MavenProject project = MavenProjectsManager.getInstance( this.myProject ).findProject( dependency );
+                    if( project != null ) {
+                        continue;
+                    }
+
+                    DependencyEmbedder dependencyEmbedder = helper.getDependencyEmbedder();
+                    if( dependencyEmbedder != null ) {
+                        Collection<MavenArtifact> embeddedArtifacts = dependencyEmbedder.getEmbeddedArtifacts();
+                        if( embeddedArtifacts != null && embeddedArtifacts.contains( dependency ) ) {
+                            continue;
                         }
+                    }
+
+                    String groupId = dependency.getGroupId();
+                    String artifactId = dependency.getArtifactId();
+                    if( "org.apache.felix".equals( groupId ) && artifactId.startsWith( "org.apache.felix.gogo." ) ) {
+                        continue;
+                    } else if( "org.osgi".equals( groupId ) && ( artifactId.equals( "org.osgi.core" ) || artifactId.equals( "org.osgi.compendium" ) ) ) {
+                        continue;
+                    }
+
+                    BundleDeploymentInfo info = new ArtifactFileDeploymentInfoImpl(
+                            this.myProject,
+                            groupId,
+                            artifactId,
+                            dependency.getVersion() );
+                    if( info.isValid() ) {
+                        bundleDeploymentInfos.add( info );
                     }
                 }
             }

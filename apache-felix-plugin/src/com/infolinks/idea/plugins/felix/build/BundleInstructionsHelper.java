@@ -50,6 +50,9 @@ public class BundleInstructionsHelper implements ModuleComponent {
     @NotNull
     private Module module;
 
+    @Nullable
+    private DependencyEmbedder dependencyEmbedder;
+
     public BundleInstructionsHelper( @NotNull Module module ) {
         this.module = module;
     }
@@ -94,6 +97,11 @@ public class BundleInstructionsHelper implements ModuleComponent {
         } else {
             return mavenProject;
         }
+    }
+
+    @Nullable
+    public DependencyEmbedder getDependencyEmbedder() {
+        return this.dependencyEmbedder;
     }
 
     public Builder createJarBuilder() throws IOException {
@@ -320,7 +328,8 @@ public class BundleInstructionsHelper implements ModuleComponent {
     }
 
     public void embedDependencies( @NotNull Analyzer analyzer ) {
-        new DependencyEmbedder( getMavenProject().getDependencies() ).processHeaders( analyzer );
+        this.dependencyEmbedder = new DependencyEmbedder( getMavenProject().getDependencies() );
+        this.dependencyEmbedder.processHeaders( analyzer );
     }
 
     @NotNull
