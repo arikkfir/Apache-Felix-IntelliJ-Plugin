@@ -29,10 +29,13 @@
         </html>
         ]]></description>
 
-    <version>1.3.3</version>
+    <version>1.3.4</version>
     <idea-version since-build="99.18"/>
     <change-notes><![CDATA[
-        <p>1.3.3</p>
+        <p>1.3.4 (in development)</p>
+        <ul>
+            <li>No changes yet.</li>
+        </ul><p>1.3.3</p>
         <ul>
             <li>Support custom 'felix.config.properties' and 'felix.system.properties' files in the run
                 configurations.
