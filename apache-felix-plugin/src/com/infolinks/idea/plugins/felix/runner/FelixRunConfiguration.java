@@ -48,6 +48,10 @@ public class FelixRunConfiguration extends RunConfigurationBase implements Modul
 
     private File bundlesDirectory;
 
+    private File felixConfigFile;
+
+    private File felixSystemFile;
+
     private int bundleServerPort = DEFAULT_BUNDLE_SERVER_PORT;
 
     private String vmParameters;
@@ -90,6 +94,22 @@ public class FelixRunConfiguration extends RunConfigurationBase implements Modul
 
     public void setBundlesDirectory( File bundlesDirectory ) {
         this.bundlesDirectory = bundlesDirectory;
+    }
+
+    public File getFelixConfigFile() {
+        return felixConfigFile;
+    }
+
+    public void setFelixConfigFile( File felixConfigFile ) {
+        this.felixConfigFile = felixConfigFile;
+    }
+
+    public File getFelixSystemFile() {
+        return felixSystemFile;
+    }
+
+    public void setFelixSystemFile( File felixSystemFile ) {
+        this.felixSystemFile = felixSystemFile;
     }
 
     public int getBundleServerPort() {
@@ -144,7 +164,7 @@ public class FelixRunConfiguration extends RunConfigurationBase implements Modul
 
     @Override
     public RunProfileState getState( @NotNull Executor executor, @NotNull ExecutionEnvironment env )
-        throws ExecutionException {
+            throws ExecutionException {
         FelixRunProfileState felixRunProfileState = new FelixRunProfileState( this, env );
 
         TextConsoleBuilderFactory tcbf = TextConsoleBuilderFactory.getInstance();
@@ -258,6 +278,22 @@ public class FelixRunConfiguration extends RunConfigurationBase implements Modul
             }
         }
 
+        Element felixConfigFileElement = element.getChild( "felix-config-file" );
+        if( felixConfigFileElement != null ) {
+            String path = felixConfigFileElement.getText();
+            if( isNotBlank( path ) ) {
+                this.felixConfigFile = new File( path );
+            }
+        }
+
+        Element felixSystemFileElement = element.getChild( "felix-system-file" );
+        if( felixSystemFileElement != null ) {
+            String path = felixSystemFileElement.getText();
+            if( isNotBlank( path ) ) {
+                this.felixSystemFile = new File( path );
+            }
+        }
+
         Element vmParamsElement = element.getChild( "vm-parameters" );
         if( vmParamsElement != null ) {
             this.vmParameters = vmParamsElement.getText();
@@ -317,6 +353,24 @@ public class FelixRunConfiguration extends RunConfigurationBase implements Modul
             Element directoryElement = new Element( "bundles-directory" );
             directoryElement.setText( this.bundlesDirectory.getAbsolutePath() );
             element.addContent( directoryElement );
+        }
+
+        //
+        // felix config file
+        //
+        if( this.felixConfigFile != null ) {
+            Element fileElement = new Element( "felix-config-file" );
+            fileElement.setText( this.felixConfigFile.getAbsolutePath() );
+            element.addContent( fileElement );
+        }
+
+        //
+        // felix config file
+        //
+        if( this.felixSystemFile != null ) {
+            Element fileElement = new Element( "felix-system-file" );
+            fileElement.setText( this.felixSystemFile.getAbsolutePath() );
+            element.addContent( fileElement );
         }
 
         //

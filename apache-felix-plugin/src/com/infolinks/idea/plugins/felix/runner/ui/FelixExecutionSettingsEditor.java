@@ -1,6 +1,7 @@
 package com.infolinks.idea.plugins.felix.runner.ui;
 
 import com.infolinks.idea.plugins.felix.runner.FelixRunConfiguration;
+import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
@@ -27,9 +28,15 @@ public class FelixExecutionSettingsEditor extends SettingsEditor<FelixRunConfigu
 
     private JComboBox loggingLevel;
 
+    private TextFieldWithBrowseButton felixConfigFile;
+
+    private TextFieldWithBrowseButton felixSystemFile;
+
     public FelixExecutionSettingsEditor() {
         this.workDir.addBrowseFolderListener( "Select working directory", null, null, createSingleFolderDescriptor() );
         this.bundlesDir.addBrowseFolderListener( "Select bundles directory", null, null, createSingleFolderDescriptor() );
+        this.felixConfigFile.addBrowseFolderListener( "Select Felix configuration file", null, null, new FileChooserDescriptor( true, false, false, false, false, false ) );
+        this.felixSystemFile.addBrowseFolderListener( "Select Felix configuration file", null, null, new FileChooserDescriptor( true, false, false, false, false, false ) );
     }
 
     @Override
@@ -38,6 +45,8 @@ public class FelixExecutionSettingsEditor extends SettingsEditor<FelixRunConfigu
         this.jvmArgs.setText( configuration.getVmParameters() );
         this.bundlesDir.setText( getFilePath( configuration.getBundlesDirectory() ) );
         this.loggingLevel.setSelectedIndex( configuration.getFelixLogLevel() );
+        this.felixConfigFile.setText( getFilePath( configuration.getFelixConfigFile() ) );
+        this.felixSystemFile.setText( getFilePath( configuration.getFelixSystemFile() ) );
     }
 
     @Override
@@ -46,6 +55,8 @@ public class FelixExecutionSettingsEditor extends SettingsEditor<FelixRunConfigu
         configuration.setVmParameters( this.jvmArgs.getText() );
         configuration.setBundlesDirectory( createFile( this.bundlesDir ) );
         configuration.setFelixLogLevel( this.loggingLevel.getSelectedIndex() );
+        configuration.setFelixConfigFile( createFile( this.felixConfigFile ) );
+        configuration.setFelixSystemFile( createFile( this.felixSystemFile ) );
     }
 
     @NotNull

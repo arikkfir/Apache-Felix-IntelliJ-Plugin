@@ -61,6 +61,7 @@ public class FelixRunProfileState extends JavaCommandLineState {
         return actions.toArray( new AnAction[ actions.size() ] );
     }
 
+    @NotNull
     @Override
     protected OSProcessHandler startProcess() throws ExecutionException {
         File frameworkPath = FelixFrameworkManager.getInstance().getFrameworkPath();
@@ -98,7 +99,7 @@ public class FelixRunProfileState extends JavaCommandLineState {
                             } );
                         } catch( DeploymentException e ) {
                             //TODO arik (12/29/10): output to console view of running
-                            showErrorDialog( e.getMessage(), "Deployment error" );
+                            showErrorDialog( e.getMessage(), "Deployment Error" );
                         }
                     }
                 }
@@ -153,6 +154,13 @@ public class FelixRunProfileState extends JavaCommandLineState {
         params.getVMParametersList().defineProperty( "felix.log.level", this.runConfiguration.getFelixLogLevel() + "" );
         params.getVMParametersList().defineProperty( "felix.startlevel.bundle", "1" );
         params.getVMParametersList().defineProperty( "org.osgi.framework.startlevel.beginning", "1" );
+
+        if( this.runConfiguration.getFelixSystemFile() != null ) {
+            params.getVMParametersList().defineProperty( "felix.system.properties", this.runConfiguration.getFelixSystemFile().toURI().toString() );
+        }
+        if( this.runConfiguration.getFelixConfigFile() != null ) {
+            params.getVMParametersList().defineProperty( "felix.config.properties", this.runConfiguration.getFelixConfigFile().toURI().toString() );
+        }
 
         File workDir = this.runConfiguration.getWorkingDirectory();
         if( !workDir.exists() && !workDir.mkdirs() ) {
