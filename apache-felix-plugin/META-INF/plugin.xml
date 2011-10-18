@@ -5,7 +5,7 @@
     <name>Apache Felix</name>
     <description><![CDATA[
         <html>
-        <strong>Apache Felix Integration for IntelliJ IDEA 10.x</strong>
+        <strong>Apache Felix Integration for IntelliJ IDEA 10 &amp 11</strong>
 
         <p>This plugin provides native IntelliJ IDEA support for developing, running and debugging OSGi
             projects developed using Apache Felix and the Apache Felix Maven Bundle Plugin.</p>
