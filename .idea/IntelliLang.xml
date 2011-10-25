@@ -5,6 +5,10 @@
       <display-name>change-notes</display-name>
       <place><![CDATA[xmlTag().withLocalName(string().equalTo("change-notes"))]]></place>
     </injection>
+    <injection language="HTML" injector-id="xml">
+      <display-name>description</display-name>
+      <place><![CDATA[xmlTag().withLocalName(string().equalTo("description"))]]></place>
+    </injection>
   </component>
 </project>
 
