@@ -8,9 +8,10 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="bundle" exported="" />
     <orderEntry type="library" name="BND" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven Integration IDEA plugin" level="project" />
-    <orderEntry type="module" module-name="bundle" exported="" />
+    <orderEntry type="library" scope="PROVIDED" name="Spring IDEA Plugin" level="project" />
   </component>
 </module>
 
