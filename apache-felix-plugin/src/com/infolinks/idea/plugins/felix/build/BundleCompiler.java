@@ -72,7 +72,7 @@ public class BundleCompiler implements ClassPostProcessingCompiler {
         context.getProgressIndicator().setText( "Generating OSGi bundles..." );
         this.logger.info( "Generating OSGi bundles..." );
 
-        List<ProcessingItem> successfulyProcessedItems = new LinkedList<ProcessingItem>();
+        List<ProcessingItem> successfullyProcessedItems = new LinkedList<ProcessingItem>();
         Map<Module, Boolean> processedModules = new HashMap<Module, Boolean>();
         Set<Module> updatedModules = new HashSet<Module>();
 
@@ -82,13 +82,13 @@ public class BundleCompiler implements ClassPostProcessingCompiler {
 
             if( processedModules.containsKey( module ) ) {
                 if( processedModules.get( module ) ) {
-                    successfulyProcessedItems.add( processingItem );
+                    successfullyProcessedItems.add( processingItem );
                 }
             } else {
                 if( processModule( context, module ) ) {
                     processedModules.put( module, true );
                     updatedModules.add( module );
-                    successfulyProcessedItems.add( processingItem );
+                    successfullyProcessedItems.add( processingItem );
                 } else {
                     processedModules.put( module, false );
                 }
@@ -100,7 +100,7 @@ public class BundleCompiler implements ClassPostProcessingCompiler {
         context.getProgressIndicator().setText( "" );
         context.getProgressIndicator().setText2( "" );
 
-        return successfulyProcessedItems.toArray( new ProcessingItem[ successfulyProcessedItems.size() ] );
+        return successfullyProcessedItems.toArray( new ProcessingItem[ successfullyProcessedItems.size() ] );
     }
 
     private void collectClasses( List<ProcessingItem> processingItems, Module module, VirtualFile file ) {
