@@ -49,7 +49,8 @@
             <li>Hide embedded bundles in the run-configuration deployment tab (unless they are used by another module
                 which does not embed them.)
             </li>
-            <li>Hide <b>org.osgi.core</b> and <b>org.osgi.compendium</b> bundles as they are provided by Felix core.
+            <li>Hide <strong>org.osgi.core</strong> and <strong>org.osgi.compendium</strong> bundles as they are
+                provided by Felix core.
             </li>
         </ul>
         <p>1.3.1</p>
