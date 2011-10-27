@@ -115,7 +115,8 @@ public class BundleInfoManager extends AbstractProjectComponent {
                             this.myProject,
                             groupId,
                             artifactId,
-                            dependency.getVersion() );
+                            dependency.getVersion(),
+                            dependency.getFile() );
                     if( info.isValid() ) {
                         bundleDeploymentInfos.add( info );
                     }

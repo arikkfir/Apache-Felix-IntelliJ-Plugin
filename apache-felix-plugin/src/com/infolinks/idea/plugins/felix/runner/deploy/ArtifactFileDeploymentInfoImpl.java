@@ -4,6 +4,7 @@ import com.infolinks.idea.plugins.felix.runner.bundle.BundleInfo;
 import com.infolinks.idea.plugins.felix.runner.bundle.BundleInfoManager;
 import com.intellij.openapi.project.Project;
 import java.io.File;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.maven.project.MavenProjectsManager;
 
 /**
@@ -19,11 +20,23 @@ public class ArtifactFileDeploymentInfoImpl implements ArtifactDeploymentInfo {
 
     private final String mavenVersion;
 
+    @Nullable
+    private File file;
+
     public ArtifactFileDeploymentInfoImpl( Project project, String groupId, String artifactId, String mavenVersion ) {
+        this( project, groupId, artifactId, mavenVersion, null );
+    }
+
+    public ArtifactFileDeploymentInfoImpl( Project project,
+                                           String groupId,
+                                           String artifactId,
+                                           String mavenVersion,
+                                           @Nullable File file ) {
         this.project = project;
         this.groupId = groupId;
         this.artifactId = artifactId;
         this.mavenVersion = mavenVersion;
+        this.file = file;
     }
 
     @Override
@@ -54,20 +67,23 @@ public class ArtifactFileDeploymentInfoImpl implements ArtifactDeploymentInfo {
 
     @Override
     public File getFile() {
-        MavenProjectsManager projectsManager = MavenProjectsManager.getInstance( this.project );
-        if( projectsManager == null ) {
-            return null;
-        }
+        if( this.file == null ) {
+            MavenProjectsManager projectsManager = MavenProjectsManager.getInstance( this.project );
+            if( projectsManager == null ) {
+                return null;
+            }
 
-        File localRepository = projectsManager.getLocalRepository();
-        if( localRepository == null ) {
-            return null;
-        }
+            File localRepository = projectsManager.getLocalRepository();
+            if( localRepository == null ) {
+                return null;
+            }
 
-        File groupDir = new File( localRepository, this.groupId.replace( '.', '/' ) );
-        File artifactDir = new File( groupDir, this.artifactId );
-        File versionDir = new File( artifactDir, this.mavenVersion );
-        return new File( versionDir, this.artifactId + "-" + this.mavenVersion + ".jar" );
+            File groupDir = new File( localRepository, this.groupId.replace( '.', '/' ) );
+            File artifactDir = new File( groupDir, this.artifactId );
+            File versionDir = new File( artifactDir, this.mavenVersion );
+            this.file = new File( versionDir, this.artifactId + "-" + this.mavenVersion + ".jar" );
+        }
+        return this.file;
     }
 
     @Override
