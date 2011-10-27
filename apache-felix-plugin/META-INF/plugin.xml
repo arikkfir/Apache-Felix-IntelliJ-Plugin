@@ -8,23 +8,25 @@
         <strong>Apache Felix Integration for IntelliJ IDEA 10 &amp 11</strong>
 
         <p>This plugin provides native IntelliJ IDEA support for developing, running and debugging OSGi
-            projects developed using Apache Felix and the Apache Felix Maven Bundle Plugin.</p>
-
+            projects developed using Apache Felix and the Apache Felix Maven Bundle Plugin.
+        </p>
         <p>Using this plugin, developers can run and debug OSGi applications using the Apache Felix OSGi container. The
             plugin allows the user to choose bundles and modules for deployment, updates installed bundles in a running
-            container whenever they are built (e.g. hot-deploy), etc.</p>
-
-        <p>The plugin provides a new type of run configuration: Apache Felix run configuration. The configuration of this
+            container whenever they are built (e.g. hot-deploy), etc.
+        </p>
+        <p>The plugin provides a new type of run configuration: Apache Felix run configuration. The configuration of
+            this
             run configuration allows the developer to choose which bundles to deploy, The list of available bundles for
-            deployment is comprised of all modules with packaging of "bundle", and their dependencies. Non-Maven modules (or
-            Maven modules not of packaging "bundle") are ignored.</p>
-
+            deployment is comprised of all modules with packaging of "bundle", and their dependencies. Non-Maven modules
+            (or
+            Maven modules not of packaging "bundle") are ignored.
+        </p>
         <p><strong>NOTE: This plugin contains code snippets copied from Apache Felix's Maven Bundle Plugin. These were
             because there was no easy way to directly invoke the Maven plugin. It is the intention of this plugin writer
-            to contact Apache Felix and work together to refactor the code so that it is easily invokable from outside the
+            to contact Apache Felix and work together to refactor the code so that it is easily invokable from outside
+            the
             Maven execution context (e.g. in IDEA's Maven support context), and to eventually contribute the code to the
             Apache Felix project umbrella.</strong></p>
-
         <p>Developed by Arik Kfir at Infolinks Inc.</p>
         </html>
         ]]></description>
@@ -34,30 +36,36 @@
     <change-notes><![CDATA[
         <p>1.3.4 (in development)</p>
         <ul>
-            <li>No changes yet.</li>
-        </ul><p>1.3.3</p>
+            <li>Fixed a bug in SNAPSHOT handling - snapshot dependencies are now correctly detected.</li>
+        </ul>
+        <p>1.3.3</p>
         <ul>
             <li>Support custom 'felix.config.properties' and 'felix.system.properties' files in the run
                 configurations.
             </li>
-        </ul><p>1.3.2</p>
+        </ul>
+        <p>1.3.2</p>
         <ul>
             <li>Hide embedded bundles in the run-configuration deployment tab (unless they are used by another module
                 which does not embed them.)
             </li>
             <li>Hide <b>org.osgi.core</b> and <b>org.osgi.compendium</b> bundles as they are provided by Felix core.
             </li>
-        </ul><p>1.3.1</p>
+        </ul>
+        <p>1.3.1</p>
         <ul>
             <li>Hide Gogo bundles as they are automatically deployed from the Felix distribution directory.</li>
             <li>Prevent deployment of JARs which are not OSGi bundles.</li>
-        </ul><p>1.3.0</p>
+        </ul>
+        <p>1.3.0</p>
         <ul>
             <li>Support the "Embed-Dependency" instruction.</li>
-        </ul><p>1.2.1</p>
+        </ul>
+        <p>1.2.1</p>
         <ul>
             <li>Prevent a null pointer exception in case of non-bundles deployed to the container.</li>
-        </ul><p>1.2.0</p>
+        </ul>
+        <p>1.2.0</p>
         <ul>
             <li>Refactor hot-deployment mechanism: stopped using Apache Felix FileInstall and instead we deploy a small
                 agent to Felix when you run or debug your project. The plugin then communicates with the agent, issuing
@@ -65,37 +73,44 @@
                 manually without conflicting with the plugin's usage of the FileInstall bundle.
             </li>
             <li>Moved project to GitHub at https://github.com/arikkfir/Apache-Felix-IntelliJ-Plugin</li>
-        </ul><p>1.1.10</p>
+        </ul>
+        <p>1.1.10</p>
         <ul>
             <li>Upgrade BND to 1.43.0</li>
             <li>Search for packages to import by scanning compiled classes in the output directory, rather than
                 Java source files. This enables creating OSGi bundles with non-Java source code such as Groovy or
                 Scala.
             </li>
-        </ul><p>1.1.9</p>
+        </ul>
+        <p>1.1.9</p>
         <ul>
             <li>No code changes - but made the project public on Google Code at:
                 https://code.google.com/p/apache-felix-intellij-plugin
             </li>
-        </ul><p>1.1.8</p>
+        </ul>
+        <p>1.1.8</p>
         <ul>
             <li>Support customizing the Apache Felix File Install polling interval</li>
             <li>Minor UI improvements</li>
-        </ul><p>1.1.7</p>
+        </ul>
+        <p>1.1.7</p>
         <ul>
             <li>Support showing custom log files in runner view</li>
-        </ul><p>1.1.6</p>
+        </ul>
+        <p>1.1.6</p>
         <ul>
             <li>Show symbolic name in deployment view when no Bundle-Name header is found</li>
             <li>Ignore non-bundle JARs in deployment view
             </li>
             <li>Ignore test-scoped dependencies</li>
             <li>Clear Felix cache directory before running</li>
-        </ul><p>1.1.5</p>
+        </ul>
+        <p>1.1.5</p>
         <ul>
             <li>Fix version sorting in bundle selection tables.</li>
             <li>Add an initial delay to hot-deployed bundles after startup.</li>
-        </ul><p>1.1.4</p>
+        </ul>
+        <p>1.1.4</p>
         <ul>
             <li>Fixed path-related bugs on Windows.</li>
             <li>Felix distribution JARs (except 'felix.jar') are now copied to the bundles directory and are deployed
@@ -104,18 +119,22 @@
             <li>No longer setting custom Felix cache directory (caused problems on Windows machines). Instead, allowing
                 Felix to decide for itself the appropriate location for its cache directory.
             </li>
-        </ul><p>1.1.3:</p>
+        </ul>
+        <p>1.1.3:</p>
         <ul>
             <li>Prevent some exceptions in rare cases</li>
-        </ul><p>1.1.2:</p>
+        </ul>
+        <p>1.1.2:</p>
         <ul>
             <li>Deployment directory sorting in deployment tab caused an error
             </li>
-        </ul><p>1.1.1:</p>
+        </ul>
+        <p>1.1.1:</p>
         <ul>
             <li>Improved column widths in run configuration's deployment tab
             </li>
-        </ul><p>1.1.0:</p>
+        </ul>
+        <p>1.1.0:</p>
         <ul>
             <li>Support for multiple hot-deployment directories (e.g. one for bundles, and another for watched
                 configuration files, etc)
@@ -125,7 +144,8 @@
             <li>Support for deploying bundles without including their version in the file name</li>
             <li>Fix bug related to snapshot dependencies getting lost after project reload
             </li>
-        </ul><p>1.0.3:</p>
+        </ul>
+        <p>1.0.3:</p>
         <ul>
             <li>Always refresh OSGi facet on "Make", to make sure the JAR is updated correctly.
             </li>
@@ -137,7 +157,8 @@
             <li>Catch hot-deploy updated much quicker (reduced File Install's poll from 2 seconds to 0.5 second)</li>
             <li>Fixed a few bugs causing exceptions at times
             </li>
-        </ul><p>1.0.2:</p>
+        </ul>
+        <p>1.0.2:</p>
         <ul>
             <li>Prevent an error on Maven re-import
             </li>
@@ -146,13 +167,15 @@
             <li>Deploy Felix Framework bundles (gogo shell, repository) through command-line rather than copying to
                 project bundles directory
             </li>
-        </ul><p>1.0.1:</p>
+        </ul>
+        <p>1.0.1:</p>
         <ul>
             <li>Make now triggers re-deployment of hot-deploy bundles when there's running OSGi processes
             </li>
             <li>Added action that triggers re-deployment of all hot-deploy bundles (in run tool window)
             </li>
-        </ul><p>1.0.0:</p>
+        </ul>
+        <p>1.0.0:</p>
         <ul>
             <li>Rewrite for IDEA X (from older Apache Felix for IDEA 9 plugin)
             </li>
