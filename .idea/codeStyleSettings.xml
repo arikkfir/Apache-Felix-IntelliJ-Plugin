@@ -3,6 +3,7 @@
   <component name="ProjectCodeStyleSettingsManager">
     <option name="PER_PROJECT_SETTINGS">
       <value>
+        <option name="USE_SAME_INDENTS" value="true" />
         <option name="LINE_SEPARATOR" value="&#10;" />
         <option name="IMPORT_LAYOUT_TABLE">
           <value>
@@ -20,6 +21,7 @@
         <option name="HTML_DONT_ADD_BREAKS_IF_INLINE_CONTENT" value="title,h1,h2,h3,h4,h5,h6" />
         <JSCodeStyleSettings>
           <option name="SPACE_AFTER_PROPERTY_COLON" value="true" />
+          <option name="SPACE_BEFORE_FUNCTION_LEFT_PARENTH" value="false" />
         </JSCodeStyleSettings>
         <XML>
           <option name="XML_ATTRIBUTE_WRAP" value="0" />
@@ -100,6 +102,11 @@
           <option name="DOWHILE_BRACE_FORCE" value="3" />
           <option name="WHILE_BRACE_FORCE" value="3" />
           <option name="FOR_BRACE_FORCE" value="3" />
+        </codeStyleSettings>
+        <codeStyleSettings language="SQL">
+          <indentOptions>
+            <option name="INDENT_SIZE" value="4" />
+          </indentOptions>
         </codeStyleSettings>
       </value>
     </option>
