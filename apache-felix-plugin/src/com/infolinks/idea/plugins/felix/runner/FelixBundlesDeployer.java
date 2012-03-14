@@ -80,7 +80,10 @@ public class FelixBundlesDeployer extends AbstractProjectComponent {
                 return !name.equalsIgnoreCase( "felix.jar" ) && name.endsWith( ".jar" );
             }
         } );
-
+        if( files == null ) {
+            throw new DeploymentException( "Felix 'bin' directory is empty or does not exist!" );
+        }
+        
         List<File> deployedFiles = new LinkedList<File>();
         for( File file : files ) {
             File to = new File( runConfiguration.getBundlesDirectory(), file.getName() );
