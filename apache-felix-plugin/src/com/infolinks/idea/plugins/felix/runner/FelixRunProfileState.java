@@ -76,6 +76,11 @@ public class FelixRunProfileState extends JavaCommandLineState {
             final CompilationStatusListener compilationStatusListener = new CompilationStatusListener() {
 
                 @Override
+                public void fileGenerated( String s, String s1 ) {
+                    // no-op
+                }
+
+                @Override
                 public void compilationFinished( boolean aborted,
                                                  int errors,
                                                  int warnings,

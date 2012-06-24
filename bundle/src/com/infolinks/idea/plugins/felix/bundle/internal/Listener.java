@@ -81,7 +81,8 @@ public class Listener {
 
                 this.stop = false;
                 while( !this.stop ) {
-                    new Thread( new Connection( this.bundleContext, listener.accept() ) ).start();
+                    Socket accept = listener.accept();
+                    new Connection( this.bundleContext, accept ).run();
                 }
                 System.out.printf( "Stopped Bundle Server listener thread...\n" );
 
@@ -113,7 +114,8 @@ public class Listener {
                 writer = new OutputStreamWriter( this.socket.getOutputStream(), "UTF-8" );
 
                 String line = reader.readLine();
-                if( line != null ) {
+                while( line != null )
+                {
                     Matcher matcher = COMMAND_PATTERN.matcher( line );
                     if( !matcher.matches() ) {
                         throw new BadCommandException( line );
@@ -143,6 +145,7 @@ public class Listener {
                     } else {
                         throw new BadCommandException( "Illegal bundle command: " + line );
                     }
+                    line = reader.readLine();
                 }
                 writer.write( "OK\n" );
 

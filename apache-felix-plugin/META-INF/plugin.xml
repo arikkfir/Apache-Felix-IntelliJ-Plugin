@@ -34,8 +34,9 @@
     <version>1.3.4</version>
     <idea-version since-build="99.18"/>
     <change-notes><![CDATA[
-        <p>1.3.4 (in development)</p>
+        <p>1.3.4</p>
         <ul>
+            <li>Fixed a performance problem when building a large amount of bundles.</li>
             <li>Fixed a bug in SNAPSHOT handling - snapshot dependencies are now correctly detected.</li>
         </ul>
         <p>1.3.3</p>
